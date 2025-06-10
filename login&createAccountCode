@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blue & White Interactive Site (HTML)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Custom CSS for the slideIn animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-slideIn {
+      animation: slideIn 1.5s ease-out;
+    }
+    /* Ensure body takes full height and font-family is applied */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif; /* Apply Inter font */
+      background: linear-gradient(to right, #e0f7fa, #ffffff); /* Background gradient */
+      color: #0d47a1; /* Default text color */
+    }
+    /* Hide specific forms by default, managed by JS */
+    #login-form {
+      display: none;
+    }
+    #dashboard {
+      display: none;
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <header class="text-center p-8">
+    <h1 class="text-5xl font-extrabold animate-slideIn text-blue-900">Welcome to Blue & White</h1>
+    <p class="text-xl mt-2 font-medium text-blue-800">Modern | Clean | Interactive</p>
+  </header>
+
+  <div id="message-container" class="mt-4 text-center">
+    <!-- Messages (errors/success) will be displayed here -->
+    <p id="auth-message" class="font-medium"></p>
+  </div>
+
+  <div class="auth-container flex flex-col items-center gap-6 mt-10">
+    <!-- Sign Up Form -->
+    <form id="signup-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+      <h2 class="text-3xl font-bold text-blue-900 mb-2">Sign Up</h2>
+      <input
+        type="email"
+        id="signup-email"
+        placeholder="Email"
+        class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+        required
+      />
+      <input
+        type="password"
+        id="signup-password"
+        placeholder="Password"
+        class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+        required
+      />
+      <button
+        type="submit"
+        class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+      >
+        Create Account
+      </button>
+      <span
+        id="switch-to-login"
+        class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+      >
+        Already have an account? Login
+      </span>
+    </form>
+
+    <!-- Login Form -->
+    <form id="login-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+      <h2 class="text-3xl font-bold text-blue-900 mb-2">Login</h2>
+      <input
+        type="email"
+        id="login-email"
+        placeholder="Email"
+        class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+        required
+      />
+      <input
+        type="password"
+        id="login-password"
+        placeholder="Password"
+        class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+        required
+      />
+      <button
+        type="submit"
+        class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+      >
+        Login
+      </button>
+      <span
+        id="switch-to-signup"
+        class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+      >
+        Don't have an account? Sign Up
+      </span>
+    </form>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4">
+    <h2 class="text-3xl font-semibold text-blue-800">Welcome to Your Dashboard!</h2>
+    <p class="text-lg text-gray-700">You are now logged in.</p>
+    <p id="dashboard-message" class="text-green-600 font-medium"></p>
+    <p id="user-id-display" class="text-sm text-gray-500 mt-2">
+      Your User ID: <span class="font-mono break-all" id="user-uid-span"></span>
+    </p>
+    <button
+      id="logout-btn"
+      class="mt-6 px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75"
+    >
+      Logout
+    </button>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // DOM Elements
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const dashboard = document.getElementById('dashboard');
+    const signupEmail = document.getElementById('signup-email');
+    const signupPassword = document.getElementById('signup-password');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const logoutBtn = document.getElementById('logout-btn');
+    const switchToLoginLink = document.getElementById('switch-to-login');
+    const switchToSignupLink = document.getElementById('switch-to-signup');
+    const authMessage = document.getElementById('auth-message');
+    const dashboardMessage = document.getElementById('dashboard-message');
+    const userUidSpan = document.getElementById('user-uid-span');
+
+    let auth; // Firebase Auth instance
+    let currentUser = null; // Store current user object
+
+    // Function to display messages to the user
+    function displayMessage(msg, type = 'error') {
+      authMessage.textContent = msg;
+      authMessage.className = `font-medium ${type === 'error' ? 'text-red-500' : 'text-green-600'}`;
+    }
+
+    // Function to switch between login and signup forms
+    function toggleForms(showLogin) {
+      signupForm.style.display = showLogin ? 'none' : 'flex';
+      loginForm.style.display = showLogin ? 'flex' : 'none';
+      displayMessage(''); // Clear messages on form switch
+      signupEmail.value = ''; // Clear fields
+      signupPassword.value = '';
+      loginEmail.value = '';
+      loginPassword.value = '';
+    }
+
+    // Initialize Firebase and set up auth listener
+    window.onload = async function() {
+      try {
+    
+        const firebaseConfig = {
+         apiKey: "AIzaSyAhnqjMaAIGWK3Qsz5zZyQY8-Aj5ckyA-g",
+         authDomain: "research-website-try1.firebaseapp.com",
+        projectId: "research-website-try1",
+        storageBucket: "research-website-try1.firebasestorage.app",
+        messagingSenderId: "377251930360",
+        appId: "1:377251930360:web:93b0b46a69e211f6631b0d",
+        measurementId: "G-MZW1PM58DB"
+        };
+
+        // Check if the firebaseConfig object is empty (meaning user hasn't added their config)
+        if (Object.keys(firebaseConfig).length === 0) {
+          displayMessage('Firebase config is missing. Please add your Firebase project configuration.', 'error');
+          console.error('Firebase config is missing. Please add your Firebase project configuration.');
+          return; // Stop initialization if config is missing
+        }
+
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+
+        // Set up authentication state observer
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          if (user) {
+            // User is signed in, show dashboard
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'none';
+            dashboard.style.display = 'flex';
+            dashboardMessage.textContent = `Welcome, ${user.email || 'Guest'}!`;
+            userUidSpan.textContent = user.uid;
+            displayMessage('', 'success'); // Clear general auth message
+          } else {
+            // User is signed out, show login form
+            dashboard.style.display = 'none';
+            toggleForms(true); // Show login form by default
+            dashboardMessage.textContent = '';
+            userUidSpan.textContent = '';
+          }
+        });
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        displayMessage(`Firebase initialization error: ${error.message}`);
+      }
+    };
+
+    // Event Listeners for form submissions and link clicks
+    signupForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = signupEmail.value;
+      const password = signupPassword.value;
+
+      if (!email || !password) {
+        displayMessage('Please enter both email and password for signup.');
+        return;
+      }
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        displayMessage('Account created successfully! You are now logged in.', 'success');
+      } catch (error) {
+        console.error('Error during signup:', error);
+        displayMessage(`Signup failed: ${error.message}`);
+      }
+    });
+
+    loginForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+
+      if (!email || !password) {
+        displayMessage('Please enter both email and password for login.');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        displayMessage('Logged in successfully!', 'success');
+      } catch (error) {
+        console.error('Error during login:', error);
+        displayMessage(`Login failed: ${error.message}`);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async function () {
+      try {
+        await signOut(auth);
+        displayMessage('Logged out successfully.', 'success');
+        // onAuthStateChanged will handle displaying the login form
+      } catch (error) {
+        console.error('Error during logout:', error);
+        displayMessage(`Logout failed: ${error.message}`);
+      }
+    });
+
+    switchToLoginLink.addEventListener('click', () => toggleForms(true));
+    switchToSignupLink.addEventListener('click', () => toggleForms(false));
+  </script>
+</body>
+</html>
