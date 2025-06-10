@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oncology Alliance</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Custom CSS for the slideIn animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-slideIn {
+      animation: slideIn 1.5s ease-out;
+    }
+    /* Basic body styles to ensure full height and font */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh; /* Ensure body takes full viewport height */
+      font-family: 'Inter', sans-serif; /* Apply Inter font */
+      background: linear-gradient(to right, #e0f7fa, #ffffff); /* Background gradient */
+      color: #0d47a1; /* Default text color */
+    }
+    /* Hide specific forms by default, managed by JS */
+    #login-form {
+      display: none;
+    }
+    #auth-forms-container {
+      display: flex; /* Initially show auth forms */
+      flex-direction: column;
+      align-items: center;
+      gap: 6px; /* Reduced gap as message container is separate */
+    }
+    #dashboard, #home-content, #about-content {
+      display: none; /* Hide content sections by default */
+    }
+
+    /* Main layout container for sidebar and content */
+    /* This now acts more as a wrapper, the actual positioning is handled by sidebar/main-content */
+    .main-layout {
+      display: flex;
+      flex-direction: column; /* Stack vertically on small screens */
+      width: 100%;
+      min-height: 100vh; /* Ensure it takes full viewport height */
+    }
+
+    @media (min-width: 768px) { /* On medium screens and larger, adjust layout */
+      .main-layout {
+        flex-direction: row; /* Still row, but sidebar is fixed */
+      }
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      background-color: #0d47a1; /* Dark blue background for sidebar */
+      color: white;
+      padding: 1.5rem; /* Default padding for mobile/expanded */
+      width: 100%; /* Full width on small screens */
+      min-height: 80px; /* Min height for small screens (horizontal menu) */
+      display: flex;
+      flex-direction: row; /* Horizontal layout for small screens */
+      justify-content: center; /* Centered for mobile */
+      align-items: center;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+      z-index: 50; /* Ensure it's above main content */
+      /* Smooth transition for width and padding */
+      transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+      overflow: hidden; /* Hide overflow when collapsed */
+    }
+
+    /* Styles for sidebar links (default for mobile, collapsed for desktop) */
+    .sidebar a {
+      white-space: nowrap; /* Prevent text wrapping */
+      transition: padding 0.3s ease-in-out, font-size 0.3s ease-in-out, background-color 0.3s ease-in-out;
+      padding: 0.75rem 1rem; /* Good padding for touch targets on mobile */
+      font-size: 1.125rem; /* Default to text-xl for readability on mobile */
+      text-align: center; /* Centered for mobile */
+      width: auto; /* Allow items to size naturally on mobile horizontal layout */
+    }
+
+    @media (min-width: 768px) { /* Styles for medium screens and larger */
+      .sidebar {
+        position: fixed; /* Fixed position for overlay effect */
+        left: 0;
+        top: 0;
+        height: 100vh; /* Full viewport height */
+        width: 80px; /* Collapsed width on larger screens */
+        flex-direction: column; /* Vertical layout for larger screens */
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 1.5rem 0.5rem; /* Reduced horizontal padding when collapsed */
+      }
+      .sidebar:hover {
+        width: 250px; /* Expanded width on hover */
+        padding: 1.5rem; /* Restore padding on hover */
+      }
+      /* Hide "Menu" title when collapsed, fade in on hover */
+      .sidebar .menu-title {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        padding-left: 0.5rem; /* Align with links */
+      }
+      .sidebar:hover .menu-title {
+        opacity: 1;
+      }
+      /* Adjust link padding and text wrapping for smooth expansion on desktop */
+      .sidebar a {
+        padding: 0.5rem 0.5rem; /* Reduced padding when collapsed on desktop */
+        font-size: 0.875rem; /* Smaller font size when collapsed on desktop (text-sm) */
+        text-align: center; /* Centered for collapsed desktop */
+        width: 100%; /* Ensure links take full available width in collapsed desktop state */
+      }
+      .sidebar:hover a {
+        padding: 0.75rem 1rem; /* Restore padding on hover */
+        font-size: 1.125rem; /* Restore larger font size on hover (text-xl) */
+        text-align: left; /* Align text to left on hover */
+      }
+    }
+
+    /* Main content area takes remaining space */
+    .main-content {
+      flex-grow: 1; /* Still helpful for vertical centering and taking space */
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      /* Transition for margin-left to avoid jumpiness on initial load / resize */
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    @media (min-width: 768px) {
+        .main-content {
+            margin-left: 80px; /* Offset content by the collapsed sidebar width */
+            width: calc(100% - 80px); /* Fill remaining width */
+        }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="w-full flex md:flex-col gap-4 md:gap-6">
+        <div class="menu-title text-2xl md:text-3xl font-bold mb-4 hidden md:block">Menu</div>
+        <a href="#" id="nav-home" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">Home</a>
+        <a href="#" id="nav-dashboard" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">Dashboard</a>
+        <a href="#" id="nav-about" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">About</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="text-center p-8">
+        <h1 class="text-5xl font-extrabold animate-slideIn text-blue-900">Welcome to the Oncology Alliance Centre</h1>
+        <p class="text-xl mt-2 font-medium text-blue-800">We try to help cancer patients using technology</p>
+      </header>
+
+      <div id="message-container" class="mt-4 text-center">
+        <!-- Messages (errors/success) will be displayed here -->
+        <p id="auth-message" class="font-medium"></p>
+      </div>
+
+      <!-- Authentication Forms Container -->
+      <div id="auth-forms-container" class="auth-container mt-10">
+        <!-- Sign Up Form -->
+        <form id="signup-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">Sign Up</h2>
+          <input
+            type="text"
+            id="signup-username"
+            placeholder="Username"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="email"
+            id="signup-email"
+            placeholder="Email"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="password"
+            id="signup-password"
+            placeholder="Password"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <button
+            type="submit"
+            class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+          >
+            Create Account
+          </button>
+          <span
+            id="switch-to-login"
+            class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+          >
+            Already have an account? Login
+          </span>
+        </form>
+
+        <!-- Login Form -->
+        <form id="login-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">Login</h2>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="Email"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Password"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <button
+            type="submit"
+            class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+          >
+            Login
+          </button>
+          <span
+            id="switch-to-signup"
+            class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+          >
+            Don't have an account? Sign Up
+          </span>
+        </form>
+      </div>
+
+      <!-- Dynamic Content Sections -->
+      <!-- Dashboard Content -->
+      <div id="dashboard" class="dashboard mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800"><span id="welcome-username">Welcome</span> to Your Personalized Space!</h2>
+        <p class="text-lg text-gray-700">Explore your dashboard and connect with resources.</p>
+        <p id="dashboard-message" class="text-green-600 font-medium"></p>
+        <p id="user-id-display" class="text-sm text-gray-500 mt-2">
+          Your User ID: <span class="font-mono break-all" id="user-uid-span"></span>
+        </p>
+        <div class="mt-4 text-left p-4 bg-blue-50 rounded-lg w-full">
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">Quick Links:</h3>
+            <ul class="list-disc list-inside text-gray-700">
+                <li><a href="#" class="text-blue-600 hover:underline">Find Resources</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Support Groups</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Latest Research</a></li>
+            </ul>
+        </div>
+        <button
+          id="logout-btn"
+          class="mt-6 px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75"
+        >
+          Logout
+        </button>
+      </div>
+
+      <!-- Home Content -->
+      <div id="home-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">Our Mission</h2>
+        <p class="text-lg text-gray-700">The Oncology Alliance Centre is dedicated to leveraging cutting-edge technology to improve the lives of cancer patients worldwide. We strive to provide accessible information, connect patients with support networks, and accelerate research breakthroughs.</p>
+        <p class="text-md text-gray-600 mt-4">Explore our resources and join our community to make a difference.</p>
+      </div>
+
+      <!-- About Content -->
+      <div id="about-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">About Us</h2>
+        <p class="text-lg text-gray-700">Founded in 2023, Oncology Alliance was born from a passion to combat cancer with innovation. Our team comprises oncologists, data scientists, software engineers, and patient advocates committed to creating impactful solutions.</p>
+        <p class="text-md text-gray-600 mt-4">Our core values: Compassion, Innovation, Collaboration, and Empowerment.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+    // DOM Elements
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const authFormsContainer = document.getElementById('auth-forms-container'); // New container
+    const dashboard = document.getElementById('dashboard');
+    const homeContent = document.getElementById('home-content');
+    const aboutContent = document.getElementById('about-content');
+
+    const signupUsername = document.getElementById('signup-username'); // New username input
+    const signupEmail = document.getElementById('signup-email');
+    const signupPassword = document.getElementById('signup-password');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const logoutBtn = document.getElementById('logout-btn');
+    const switchToLoginLink = document.getElementById('switch-to-login');
+    const switchToSignupLink = document.getElementById('switch-to-signup');
+    const authMessage = document.getElementById('auth-message');
+    const dashboardMessage = document.getElementById('dashboard-message');
+    const userUidSpan = document.getElementById('user-uid-span');
+    const welcomeUsernameSpan = document.getElementById('welcome-username'); // Span for username on dashboard
+
+    // Navigation Links
+    const navHome = document.getElementById('nav-home');
+    const navDashboard = document.getElementById('nav-dashboard');
+    const navAbout = document.getElementById('nav-about');
+
+
+    let auth; // Firebase Auth instance
+    let db; // Firebase Firestore instance
+    let currentUser = null; // Store current user object
+
+    // Function to display messages to the user
+    function displayMessage(msg, type = 'error') {
+      authMessage.textContent = msg;
+      authMessage.className = `font-medium ${type === 'error' ? 'text-red-500' : 'text-green-600'}`;
+    }
+
+    // Function to validate email format
+    function isValidEmail(email) {
+        // Simple regex for email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Function to show a specific content section and hide others
+    function showContent(sectionId) {
+        const sections = [authFormsContainer, dashboard, homeContent, aboutContent];
+        sections.forEach(section => {
+            if (section && section.id === sectionId) { // Check if section exists
+                section.style.display = 'flex'; // Use flex for these sections to align content
+            } else if (section) {
+                section.style.display = 'none';
+            }
+        });
+        displayMessage(''); // Clear any auth messages when navigating
+    }
+
+    // Function to switch between login and signup forms
+    function toggleAuthForms(showLogin) {
+      signupForm.style.display = showLogin ? 'none' : 'flex';
+      loginForm.style.display = showLogin ? 'flex' : 'none';
+      displayMessage(''); // Clear messages on form switch
+      signupUsername.value = ''; // Clear username field
+      signupEmail.value = ''; // Clear fields
+      signupPassword.value = '';
+      loginEmail.value = '';
+      loginPassword.value = '';
+    }
+
+    // Initialize Firebase and set up auth listener
+    window.onload = async function() {
+      try {
+        // YOUR FIREBASE CONFIGURATION GOES HERE
+        // Replace the empty object {} below with your actual Firebase config object.
+        // You can find this in your Firebase project settings (Project settings > Your apps > Web app).
+        // It will look something like:
+        // const firebaseConfig = {
+        //   apiKey: "YOUR_API_KEY",
+        //   authDomain: "YOUR_AUTH_DOMAIN",
+        //   projectId: "YOUR_PROJECT_ID",
+        //   storageBucket: "YOUR_STORAGE_BUCKET",
+        //   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        //   appId: "YOUR_APP_ID"
+        // };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhnqjMaAIGWK3Qsz5zZyQY8-Aj5ckyA-g",
+            authDomain: "research-website-try1.firebaseapp.com",
+            projectId: "research-website-try1",
+            storageBucket: "research-website-try1.firebasestorage.app",
+            messagingSenderId: "377251930360",
+            appId: "1:377251930360:web:93b0b46a69e211f6631b0d",
+        };
+
+        // Check if the firebaseConfig object is empty (meaning user hasn't added their config)
+        if (Object.keys(firebaseConfig).length === 0) {
+          displayMessage('Firebase config is missing. Please add your Firebase project configuration.', 'error');
+          console.error('Firebase config is missing. Please add your Firebase project configuration.');
+          return; // Stop initialization if config is missing
+        }
+
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app); // Initialize Firestore
+
+        // Set up authentication state observer
+        onAuthStateChanged(auth, async (user) => {
+          currentUser = user;
+          if (user) {
+            // User is signed in, try to fetch username from Firestore
+            const docRef = doc(db, "artifacts", "your-app-id", "users", user.uid, "user-data", "profile"); // Public data path
+            const docSnap = await getDoc(docRef);
+
+            let username = user.email || 'Guest'; // Fallback to email if no username
+            if (docSnap.exists() && docSnap.data().username) {
+              username = docSnap.data().username;
+            }
+
+            // Update dashboard display
+            welcomeUsernameSpan.textContent = `Welcome, ${username}`;
+            showContent('dashboard');
+            userUidSpan.textContent = user.uid;
+          } else {
+            // User is signed out, show authentication forms
+            showContent('auth-forms-container');
+            toggleAuthForms(true); // Show login form by default
+            welcomeUsernameSpan.textContent = 'Welcome'; // Reset to default
+            userUidSpan.textContent = '';
+          }
+        });
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        displayMessage(`Firebase initialization error: ${error.message}`);
+      }
+    };
+
+    // Event Listeners for form submissions and link clicks
+    signupForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = signupUsername.value; // Get username
+      const email = signupEmail.value;
+      const password = signupPassword.value;
+
+      if (!username || !email || !password) {
+        displayMessage('Please enter username, email, and password for signup.');
+        return;
+      }
+
+      // Validate email format
+      if (!isValidEmail(email)) {
+        displayMessage('Email not valid. Please check and try again.', 'error');
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Store user data (username and email) in Firestore
+        // Using a public data path for simplicity, adjust security rules as needed
+        const userDocRef = doc(db, "artifacts", "your-app-id", "users", user.uid, "user-data", "profile");
+        await setDoc(userDocRef, {
+          username: username,
+          email: email,
+          createdAt: new Date()
+        });
+
+        displayMessage('Account created successfully! You are now logged in.', 'success');
+        // onAuthStateChanged will handle showing the dashboard with the username
+      } catch (error) {
+        console.error('Error during signup:', error);
+        if (error.code === 'auth/email-already-in-use') {
+          displayMessage('Email already in use. You can directly login.', 'error');
+        } else {
+          displayMessage(`Signup failed: ${error.message}`);
+        }
+      }
+    });
+
+    loginForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+
+      if (!email || !password) {
+        displayMessage('Please enter both email and password for login.');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        displayMessage('Logged in successfully!', 'success');
+        // onAuthStateChanged will handle showing the dashboard with the username
+      } catch (error) {
+        console.error('Error during login:', error);
+        displayMessage(`Login failed: ${error.message}`);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async function () {
+      try {
+        await signOut(auth);
+        displayMessage('Logged out successfully.', 'success');
+        // onAuthStateChanged will handle displaying the login form
+      } catch (error) {
+        console.error('Error during logout:', error);
+        displayMessage(`Logout failed: ${error.message}`);
+      }
+    });
+
+    switchToLoginLink.addEventListener('click', () => toggleAuthForms(true));
+    switchToSignupLink.addEventListener('click', () => toggleAuthForms(false));
+
+    // Sidebar Navigation Event Listeners
+    navHome.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('home-content');
+    });
+
+    navDashboard.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Only show dashboard if user is logged in
+        if (currentUser) {
+            showContent('dashboard');
+        } else {
+            displayMessage('Please log in to view the dashboard.', 'error');
+            showContent('auth-forms-container');
+            toggleAuthForms(true); // Show login form
+        }
+    });
+
+    navAbout.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('about-content');
+    });
+  </script>
+</body>
+</html>
