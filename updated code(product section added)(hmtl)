@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oncology Alliance</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Custom CSS for the slideIn animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-slideIn {
+      animation: slideIn 1.5s ease-out;
+    }
+    /* Basic body styles to ensure full height and font */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh; /* Ensure body takes full viewport height */
+      font-family: 'Inter', sans-serif; /* Apply Inter font */
+      background: linear-gradient(to right, #e0f7fa, #f8faff); /* Light blue to very subtle off-white background */
+      color: #0d47a1; /* Default text color */
+    }
+    /* Hide all main content sections by default; JS will show the appropriate one */
+    #auth-forms-container, #dashboard, #home-content-internal, #about-content, #landing-page-content, #donate-content, #resources-content, #product-content {
+      display: none;
+    }
+
+    /* Main layout container for sidebar and content */
+    .main-layout {
+      display: flex;
+      flex-direction: column; /* Stack vertically on small screens */
+      width: 100%;
+      min-height: 100vh; /* Ensure it takes full viewport height */
+    }
+
+    @media (min-width: 768px) { /* On medium screens and larger, adjust layout */
+      .main-layout {
+        flex-direction: row; /* Still row, but sidebar is fixed */
+      }
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      background: linear-gradient(to bottom, #0a3d62, #001f3f); /* Dark blue gradient for sidebar */
+      color: white;
+      padding: 1.5rem; /* Default padding for mobile/expanded */
+      width: 100%; /* Full width on small screens */
+      min-height: 80px; /* Min height for small screens (horizontal menu) */
+      display: flex;
+      flex-direction: row; /* Horizontal layout for small screens */
+      justify-content: center; /* Centered for mobile */
+      align-items: center;
+      /* Soften shadow */
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+      z-index: 50; /* Ensure it's above main content */
+      /* Smooth transition for width and padding */
+      transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+      overflow: hidden; /* Hide overflow when collapsed */
+    }
+
+    /* Styles for sidebar links (default for mobile, collapsed for desktop) */
+    .sidebar a {
+      white-space: nowrap; /* Prevent text wrapping */
+      display: flex; /* Enable flex for icon and text alignment */
+      align-items: center; /* Vertically align icon and text */
+      gap: 1rem; /* Adjusted: Increased space between icon and text */
+      transition: padding 0.3s ease-in-out, font-size 0.3s ease-in-out, background-color 0.3s ease-in-out, transform 0.2s ease-out; /* Added transform */
+      padding: 0.75rem 1rem; /* Good padding for touch targets on mobile */
+      font-size: 1.125rem; /* Default to text-xl for readability on mobile */
+      text-align: center; /* Centered for mobile */
+      width: auto; /* Allow items to size naturally on mobile horizontal layout */
+      position: relative; /* For pseudo-elements or more complex effects */
+    }
+    .sidebar a:hover {
+      background-color: rgba(33, 150, 243, 0.2); /* Lighter blue with transparency on hover */
+      transform: translateX(5px); /* Subtle slide effect on hover */
+    }
+    /* UPDATED: Standardized icon sizing via CSS */
+    .sidebar a svg {
+        width: 28px; /* Standardized icon size */
+        height: 28px; /* Standardized icon size */
+        flex-shrink: 0; /* Prevent icons from shrinking in flex container */
+        transition: transform 0.2s ease-out; /* Smooth transition for icon */
+    }
+    .sidebar a:hover svg {
+        transform: scale(1.1); /* Slightly enlarge icon on hover */
+    }
+
+    @media (min-width: 768px) { /* Styles for medium screens and larger */
+      .sidebar {
+        position: fixed; /* Fixed position for overlay effect */
+        left: 0;
+        top: 0;
+        height: 100vh; /* Full viewport height */
+        width: 130px; /* Adjusted: Increased collapsed width to accommodate larger icons/text */
+        flex-direction: column; /* Vertical layout for larger screens */
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 1.5rem 0.5rem; /* Reduced horizontal padding when collapsed */
+      }
+      .sidebar:hover {
+        width: 250px; /* Expanded width on hover */
+        padding: 1.5rem; /* Restore padding on hover */
+      }
+      /* Hide "Menu" title when collapsed, fade in on hover */
+      .sidebar .menu-title {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        padding-left: 0.5rem; /* Align with links */
+        border-bottom: 1px solid rgba(255,255,255,0.2); /* Subtle separator */
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+      .sidebar:hover .menu-title {
+        opacity: 1;
+      }
+      /* Adjust link padding and text wrapping for smooth expansion on desktop */
+      .sidebar a {
+        padding: 0.5rem 0.5rem; /* Adjusted: Increased horizontal padding when collapsed */
+        font-size: 0.875rem; /* Smaller font size when collapsed on desktop (text-sm) */
+        text-align: center; /* Centered for collapsed desktop */
+        width: 100%; /* Ensure links take full available width in collapsed desktop state */
+        justify-content: center; /* Center content when collapsed */
+      }
+      .sidebar:hover a {
+        padding: 0.75rem 1rem; /* Restore padding on hover */
+        font-size: 1.125rem; /* Restore larger font size on hover (text-xl) */
+        text-align: left; /* Align text to left on hover */
+        justify-content: flex-start; /* Align to start when expanded */
+      }
+    }
+
+    /* Main content area takes remaining space */
+    .main-content {
+      flex-grow: 1; /* Still helpful for vertical centering and taking space */
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      /* Transition for margin-left to avoid jumpiness on initial load / resize */
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    @media (min-width: 768px) {
+        .main-content {
+            margin-left: 130px; /* Adjusted: Offset content by the new collapsed sidebar width */
+            width: calc(100% - 130px); /* Adjusted: Fill remaining width */
+        }
+    }
+
+    /* Adjust backgrounds of main content cards for a softer feel */
+    #landing-page-content,
+    #auth-forms-container form, /* Applies to signup-form and login-form */
+    #dashboard,
+    #home-content-internal,
+    #about-content,
+    #donate-content,
+    #product-content,
+    #resources-content { /* Added resources-content */
+      background-color: #f0f8ff; /* AliceBlue - a very light blue-white */
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Soften existing shadow */
+    }
+
+    /* Light blue for message container */
+    #message-container p {
+        background-color: #e3f2fd; /* Lightest blue for messages */
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+    }
+
+    /* Adjust text colors for better contrast and hierarchy */
+    .text-blue-900 { color: #0d47a1; } /* Main headings, dark blue */
+    .text-blue-800 { color: #1565c0; } /* Subheadings, slightly lighter blue */
+    .text-blue-700 { color: #1976d2; } /* Buttons/links, medium blue */
+    .text-blue-600 { color: #2196f3; } /* Hover/active links, lighter blue */
+    .text-gray-700 { color: #4a5568; } /* General paragraph text, dark gray for readability */
+    .text-gray-500 { color: #718096; } /* Faded text, medium gray */
+
+    /* Input backgrounds should remain white for clarity */
+    input, textarea, select {
+        background-color: #ffffff;
+    }
+
+    /* Button specific color adjustments */
+    .bg-blue-700 { background-color: #1976d2; } /* Sign up/Login button */
+    .hover\:bg-blue-800:hover { background-color: #1565c0; }
+
+    .bg-green-600 { background-color: #28a745; } /* Get Started button */
+    .hover\:bg-green-700:hover { background-color: #218838; }
+
+    .bg-yellow-500 { background-color: #ffc107; } /* Donate button */
+    .hover\:bg-yellow-600:hover { background-color: #e0a800; }
+
+    .bg-red-600 { background-color: #dc3545; } /* Logout button */
+    .hover\:bg-red-700:hover { background-color: #c82333; }
+
+    /* Specific styles for the tracker section */
+    .tracker-section {
+        background-color: #e8f5e9; /* Light green background for tracker */
+        border: 1px solid #c8e6c9;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-top: 1.5rem;
+        width: 100%;
+        max-width: 500px;
+    }
+    .entry-item {
+        border-bottom: 1px dashed #bbdefb;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .entry-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+    /* Styles for resource cards within the resources section */
+    .resource-category-card {
+        background-color: #e0f2f7; /* Very light blue for resource cards */
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+        width: 100%;
+        max-width: 600px;
+        text-align: left;
+    }
+    .resource-category-card h3 {
+        color: #0d47a1; /* Dark blue for category titles */
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .resource-category-card ul {
+        list-style: disc;
+        list-style-position: inside;
+        color: #4a5568;
+    }
+    .resource-category-card li {
+        margin-bottom: 0.5rem;
+    }
+    .resource-category-card a {
+        color: #1976d2; /* Medium blue for resource links */
+        text-decoration: underline;
+        font-weight: 500;
+    }
+    .resource-category-card a:hover {
+        color: #2196f3; /* Lighter blue on hover */
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="w-full flex md:flex-col gap-4 md:gap-6">
+        <div class="menu-title text-2xl md:text-3xl font-bold mb-4 hidden md:block">Menu</div>
+        <a href="#" id="nav-home" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="#" id="nav-dashboard" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#" id="nav-resources" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16a2 2 0 0 0 2 2h14"/></svg>
+          Resources
+        </a>
+        <a href="#" id="nav-product" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-box"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          Product
+        </a>
+        <a href="#" id="nav-about" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          About
+        </a>
+        <a href="#" id="nav-donate" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          Donate
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="text-center p-8">
+        <h1 class="text-5xl font-extrabold animate-slideIn text-blue-900">Welcome to the Oncology Alliance Centre</h1>
+        <p class="text-xl mt-2 font-medium text-blue-800">We try to help cancer patients using technology</p>
+      </header>
+
+      <div id="message-container" class="mt-4 text-center">
+        <!-- Messages (errors/success) will be displayed here -->
+        <p id="auth-message" class="font-medium"></p>
+      </div>
+
+      <!-- Landing Page Content (Default view when logged out / Home button clicked) -->
+      <div id="landing-page-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">Empowering Cancer Patients Through Technology</h2>
+        <p class="text-lg text-gray-700">Join our community committed to providing innovative solutions and support for those affected by cancer.</p>
+        <button
+          id="get-started-btn"
+          class="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 text-xl"
+        >
+          Get Started
+        </button>
+      </div>
+
+      <!-- Authentication Forms Container -->
+      <div id="auth-forms-container" class="auth-container mt-10">
+        <!-- Sign Up Form -->
+        <form id="signup-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">Sign Up</h2>
+          <input
+            type="text"
+            id="signup-username"
+            placeholder="Username"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="email"
+            id="signup-email"
+            placeholder="Email"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="password"
+            id="signup-password"
+            placeholder="Password"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <button
+            type="submit"
+            class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+          >
+            Create Account
+          </button>
+          <span
+            id="switch-to-login"
+            class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+          >
+            Already have an account? Login
+          </span>
+        </form>
+
+        <!-- Login Form -->
+        <form id="login-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">Login</h2>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="Email"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Password"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <button
+            type="submit"
+            class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+          >
+            Login
+          </button>
+          <span
+            id="switch-to-signup"
+            class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+          >
+            Don't have an account? Sign Up
+          </span>
+        </form>
+      </div>
+
+      <!-- Dynamic Content Sections -->
+      <!-- Dashboard Content -->
+      <div id="dashboard" class="dashboard mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800"><span id="welcome-username">Welcome</span> to Your Personalized Space!</h2>
+        <p class="text-lg text-gray-700">Explore your dashboard and connect with resources.</p>
+        <p id="dashboard-message" class="text-green-600 font-medium"></p>
+        <p id="user-id-display" class="text-sm text-gray-500 mt-2">
+          Your User ID: <span class="font-mono break-all" id="user-uid-span"></span>
+        </p>
+
+        <!-- Symptom and Mood Tracker Section -->
+        <div class="tracker-section mt-6 p-4 rounded-xl shadow-inner text-left">
+          <h3 class="text-2xl font-semibold text-blue-800 mb-4">Daily Tracker</h3>
+          <form id="tracker-form" class="flex flex-col gap-3">
+            <label for="symptoms" class="text-gray-700 font-medium">Symptoms/Notes:</label>
+            <textarea
+              id="symptoms"
+              rows="3"
+              placeholder="e.g., Fatigue (mild), Nausea (moderate), Good energy after lunch."
+              class="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            ></textarea>
+
+            <label for="mood" class="text-gray-700 font-medium">Mood:</label>
+            <select
+              id="mood"
+              class="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            >
+              <option value="">Select Mood</option>
+              <option value="Excellent">😀 Excellent</option>
+              <option value="Good">🙂 Good</option>
+              <option value="Neutral">😐 Neutral</option>
+              <option value="Bad">🙁 Bad</option>
+              <option value="Very Bad">😞 Very Bad</option>
+            </select>
+
+            <button
+              type="submit"
+              class="mt-4 p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+            >
+              Save Entry
+            </button>
+          </form>
+
+          <div class="mt-6">
+            <h4 class="text-xl font-semibold text-blue-700 mb-3">Your Recent Entries:</h4>
+            <div id="tracker-entries-list" class="flex flex-col gap-3">
+              <!-- Tracker entries will be loaded here by JavaScript -->
+              <p class="text-gray-500">No entries yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-left p-4 bg-blue-50 rounded-lg w-full">
+            <h3 class="text-xl font-semibold text-blue-700 mb-2">Quick Links:</h3>
+            <ul class="list-disc list-inside text-gray-700">
+                <li><a href="#" class="text-blue-600 hover:underline">Find Resources</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Support Groups</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Latest Research</a></li>
+            </ul>
+        </div>
+        <button
+          id="logout-btn"
+          class="mt-6 px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75"
+        >
+          Logout
+        </button>
+      </div>
+
+      <!-- Actual Home Content - Renamed to avoid ID conflict with landing page -->
+      <div id="home-content-internal" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">Our Mission</h2>
+        <p class="text-lg text-gray-700">The Oncology Alliance Centre is dedicated to leveraging cutting-edge technology to improve the lives of cancer patients worldwide. We strive to provide accessible information, connect patients with support networks, and accelerate research breakthroughs.</p>
+        <p class="text-md text-gray-600 mt-4">Explore our resources and join our community to make a difference.</p>
+      </div>
+
+      <!-- About Content -->
+      <div id="about-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">About Us</h2>
+        <p class="text-lg text-gray-700">Founded in 2023, Oncology Alliance was born from a passion to combat cancer with innovation. Our team comprises oncologists, data scientists, software engineers, and patient advocates committed to creating impactful solutions.</p>
+        <p class="text-md text-gray-600 mt-4">Our core values: Compassion, Innovation, Collaboration, and Empowerment.</p>
+      </div>
+      
+      <!-- Product Content -->
+      <div id="product-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">Product</h2>
+        <p class="text-lg text-gray-700">Our new product is getting implemented here..</p>
+      </div>
+
+      <!-- Resources Content - New Section -->
+      <div id="resources-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-2xl">
+        <h2 class="text-3xl font-semibold text-blue-800">Personalized Resource Hub</h2>
+        <p class="text-lg text-gray-700">Access curated information and support tailored to your journey. <br> (Content below is illustrative and can be dynamically personalized based on user profile, e.g., cancer type, treatment stage, etc.)</p>
+
+        <div class="resource-category-card">
+            <h3>Treatment Guides</h3>
+            <ul>
+                <li><a href="https://www.cancer.org/treatment.html" target="_blank">Understanding Chemotherapy</a></li>
+                <li><a href="https://www.cancer.gov/about-cancer/treatment/types/radiation-therapy" target="_blank">Radiation Therapy Explained</a></li>
+                <li><a href="https://www.cancer.org/treatment/treatments-and-side-effects/complementary-and-integrative-medicine.html" target="_blank">Managing Side Effects</a></li>
+            </ul>
+        </div>
+
+        <div class="resource-category-card">
+            <h3>Support Networks</h3>
+            <ul>
+                <li><a href="https://www.cancer.org/support-programs-and-services/online-communities.html" target="_blank">Online Patient Communities</a></li>
+                <li><a href="https://www.cancer.net/coping-with-cancer/social-and-emotional-effects/support-groups" target="_blank">Finding Local Support Groups</a></li>
+                <li><a href="https://www.cancercare.org/get_help" target="_blank">Caregiver Resources</a></li>
+            </ul>
+        </div>
+
+        <div class="resource-category-card">
+            <h3>Nutrition & Wellness</h3>
+            <ul>
+                <li><a href="https://www.cancer.org/cancer/survivorship/nutrition-physical-activity.html" target="_blank">Eating Well During Treatment</a></li>
+                <li><a href="https://www.cancer.gov/about-cancer/causes-prevention/risk/obesity/physical-activity-fact-sheet" target="_blank">Physical Activity Guidelines</a></li>
+                <li><a href="https://www.cancer.org/healthy/eat-healthy-get-active/eating-well-during-treatment.html" target="_blank">Recipes for Cancer Patients</a></li>
+            </ul>
+        </div>
+
+        <div class="resource-category-card">
+            <h3>Latest Research</h3>
+            <ul>
+                <li><a href="https://www.cancer.gov/clinicaltrials" target="_blank">Clinical Trials Finder</a></li>
+                <li><a href="https://www.aacr.org/patients-survivors/" target="_blank">Breakthroughs in Oncology</a></li>
+                <li><a href="https://www.who.int/news-room/fact-sheets/detail/cancer" target="_blank">Global Cancer Statistics</a></li>
+            </ul>
+        </div>
+      </div>
+
+      <!-- Donate Content -->
+      <div id="donate-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-lg">
+        <h2 class="text-3xl font-semibold text-blue-800">Support Our Cause</h2>
+        <p class="text-lg text-gray-700">Your generous donations enable us to continue our vital work in cancer research, patient support, and technology development.</p>
+        <p class="text-md text-gray-600 mt-4">Every contribution, big or small, makes a significant impact on the lives of cancer patients and their families.</p>
+        <button
+          class="px-8 py-4 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75 text-xl"
+          onclick="alert('Thank you for your interest in donating! This is a placeholder for a donation process.');"
+        >
+          Make a Donation
+        </button>
+        <p class="text-sm text-gray-500 mt-4">Thank you for your kindness!</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      addDoc,
+      query,
+      orderBy,
+      limit,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+    // DOM Elements
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const authFormsContainer = document.getElementById('auth-forms-container');
+    const landingPageContent = document.getElementById('landing-page-content');
+    const dashboard = document.getElementById('dashboard');
+    const homeContentInternal = document.getElementById('home-content-internal');
+    const aboutContent = document.getElementById('about-content');
+    const donateContent = document.getElementById('donate-content');
+    const resourcesContent = document.getElementById('resources-content');
+    const productContent = document.getElementById('product-content');
+
+    const signupUsername = document.getElementById('signup-username');
+    const signupEmail = document.getElementById('signup-email');
+    const signupPassword = document.getElementById('signup-password');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const logoutBtn = document.getElementById('logout-btn');
+    const switchToLoginLink = document.getElementById('switch-to-login');
+    const switchToSignupLink = document.getElementById('switch-to-signup');
+    const getStartedBtn = document.getElementById('get-started-btn');
+
+    const authMessage = document.getElementById('auth-message');
+    const dashboardMessage = document.getElementById('dashboard-message');
+    const userUidSpan = document.getElementById('user-uid-span');
+    const welcomeUsernameSpan = document.getElementById('welcome-username');
+
+    // Navigation Links
+    const navHome = document.getElementById('nav-home');
+    const navDashboard = document.getElementById('nav-dashboard');
+    const navResources = document.getElementById('nav-resources');
+    const navAbout = document.getElementById('nav-about');
+    const navDonate = document.getElementById('nav-donate');
+    const navProduct = document.getElementById('nav-product');
+
+    // Tracker Elements
+    const trackerForm = document.getElementById('tracker-form');
+    const symptomsInput = document.getElementById('symptoms');
+    const moodSelect = document.getElementById('mood');
+    const trackerEntriesList = document.getElementById('tracker-entries-list');
+
+
+    let auth;
+    let db;
+    let currentUser = null;
+    let unsubscribeTracker = null;
+
+    // Function to display messages to the user
+    function displayMessage(msg, type = 'error') {
+      authMessage.textContent = msg;
+      authMessage.className = `font-medium ${type === 'error' ? 'text-red-500' : 'text-green-600'}`;
+    }
+
+    // Function to validate email format
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Function to show a specific content section and hide others
+    function showContent(sectionId) {
+        const sections = [authFormsContainer, dashboard, homeContentInternal, aboutContent, landingPageContent, donateContent, resourcesContent, productContent];
+        sections.forEach(section => {
+            if (section) {
+                section.style.display = 'none';
+            }
+        });
+
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'flex';
+        }
+        displayMessage(''); // Clear any auth messages when navigating
+
+        // Adjust visibility of get-started-btn based on section and login status
+        if (sectionId === 'landing-page-content') {
+            if (currentUser) {
+                getStartedBtn.style.display = 'none';
+            } else {
+                getStartedBtn.style.display = 'block';
+            }
+        }
+
+        // Manage Firestore listener for tracker
+        if (sectionId === 'dashboard' && currentUser && db) {
+            if (!unsubscribeTracker) {
+                attachTrackerListener(currentUser.uid);
+            }
+        } else {
+            if (unsubscribeTracker) {
+                unsubscribeTracker();
+                unsubscribeTracker = null;
+                trackerEntriesList.innerHTML = '<p class="text-gray-500">No entries yet.</p>';
+            }
+        }
+    }
+
+    // Function to fetch and display tracker entries
+    async function attachTrackerListener(userId) {
+        if (!db || !userId) return;
+
+        const appId = "your-app-id";
+        const trackerCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/tracker-entries`);
+        const q = query(trackerCollectionRef, orderBy("timestamp", "desc"), limit(5));
+
+        unsubscribeTracker = onSnapshot(q, (snapshot) => {
+            trackerEntriesList.innerHTML = '';
+            if (snapshot.empty) {
+                trackerEntriesList.innerHTML = '<p class="text-gray-500">No entries yet.</p>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const entry = doc.data();
+                const entryDate = entry.timestamp ? new Date(entry.timestamp.toDate()).toLocaleString() : 'N/A';
+                const entryElement = document.createElement('div');
+                entryElement.className = 'entry-item text-gray-700';
+                entryElement.innerHTML = `
+                    <p class="font-semibold text-blue-700">${entryDate}</p>
+                    <p><strong>Mood:</strong> ${entry.mood || 'N/A'}</p>
+                    <p><strong>Notes:</strong> ${entry.symptoms || 'No notes'}</p>
+                `;
+                trackerEntriesList.appendChild(entryElement);
+            });
+        }, (error) => {
+            console.error("Error fetching tracker entries:", error);
+            displayMessage('Error loading tracker entries.', 'error');
+        });
+    }
+
+    // Function to switch between login and signup forms
+    function toggleAuthForms(showLogin) {
+      signupForm.style.display = showLogin ? 'none' : 'flex';
+      loginForm.style.display = showLogin ? 'flex' : 'none';
+      displayMessage('');
+      signupUsername.value = '';
+      signupEmail.value = '';
+      signupPassword.value = '';
+      loginEmail.value = '';
+      loginPassword.value = '';
+    }
+
+    // Initialize Firebase and set up auth listener
+    window.onload = async function() {
+      try {
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhnqjMaAIGWK3Qsz5zZyQY8-Aj5ckyA-g",
+            authDomain: "research-website-try1.firebaseapp.com",
+            projectId: "research-website-try1",
+            storageBucket: "research-website-try1.firebasestorage.app",
+            messagingSenderId: "377251930360",
+            appId: "1:377251930360:web:93b0b46a69e211f6631b0d",
+        };
+
+        if (Object.keys(firebaseConfig).length === 0) {
+          displayMessage('Firebase config is missing. Please add your Firebase project configuration.', 'error');
+          console.error('Firebase config is missing. Please add your Firebase project configuration.');
+          return;
+        }
+
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+          currentUser = user;
+          if (user) {
+            const docRef = doc(db, "artifacts", "your-app-id", "users", user.uid, "user-data", "profile");
+            const docSnap = await getDoc(docRef);
+
+            let username = user.email || 'Guest';
+            if (docSnap.exists() && docSnap.data().username) {
+              username = docSnap.data().username;
+            }
+
+            welcomeUsernameSpan.textContent = `Welcome, ${username}`;
+            showContent('dashboard');
+            userUidSpan.textContent = user.uid;
+            if (dashboard.style.display === 'flex') {
+                attachTrackerListener(user.uid);
+            }
+          } else {
+            showContent('landing-page-content');
+            welcomeUsernameSpan.textContent = 'Welcome';
+            userUidSpan.textContent = '';
+            if (unsubscribeTracker) {
+                unsubscribeTracker();
+                unsubscribeTracker = null;
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        displayMessage(`Firebase initialization error: ${error.message}`);
+      }
+    };
+
+    signupForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = signupUsername.value;
+      const email = signupEmail.value;
+      const password = signupPassword.value;
+
+      if (!username || !email || !password) {
+        displayMessage('Please enter username, email, and password for signup.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        displayMessage('Email not valid. Please check and try again.', 'error');
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userDocRef = doc(db, "artifacts", "your-app-id", "users", user.uid, "user-data", "profile");
+        await setDoc(userDocRef, {
+          username: username,
+          email: email,
+          createdAt: new Date()
+        });
+
+        displayMessage('Account created successfully! You are now logged in.', 'success');
+      } catch (error) {
+        console.error('Error during signup:', error);
+        if (error.code === 'auth/email-already-in-use') {
+          displayMessage('Email already in use. You can directly login.', 'error');
+        } else {
+          displayMessage(`Signup failed: ${error.message}`);
+        }
+      }
+    });
+
+    loginForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+
+      if (!email || !password) {
+        displayMessage('Please enter both email and password for login.');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        displayMessage('Logged in successfully!', 'success');
+      } catch (error) {
+        console.error('Error during login:', error);
+        displayMessage(`Login failed: ${error.message}`);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async function () {
+      try {
+        await signOut(auth);
+        displayMessage('Logged out successfully.', 'success');
+      } catch (error) {
+        console.error('Error during logout:', error);
+        displayMessage(`Logout failed: ${error.message}`);
+      }
+    });
+
+    switchToLoginLink.addEventListener('click', () => toggleAuthForms(true));
+    switchToSignupLink.addEventListener('click', () => toggleAuthForms(false));
+
+    getStartedBtn.addEventListener('click', () => {
+        showContent('auth-forms-container');
+        toggleAuthForms(true);
+    });
+
+    // Sidebar Navigation Event Listeners
+    navHome.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('landing-page-content');
+    });
+
+    navDashboard.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentUser) {
+            showContent('dashboard');
+        } else {
+            displayMessage('Please log in to view the dashboard.', 'error');
+            showContent('auth-forms-container');
+            toggleAuthForms(true);
+        }
+    });
+
+    navResources.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('resources-content');
+    });
+
+    navProduct.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('product-content');
+    });
+
+    navAbout.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('about-content');
+    });
+
+    navDonate.addEventListener('click', (e) => {
+        e.preventDefault();
+        showContent('donate-content');
+    });
+
+    // Tracker Form Submission
+    trackerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser) {
+            displayMessage('Please log in to save tracker entries.', 'error');
+            return;
+        }
+
+        const symptoms = symptomsInput.value.trim();
+        const mood = moodSelect.value;
+
+        if (!symptoms && !mood) {
+            displayMessage('Please enter symptoms/notes or select a mood to save.', 'error');
+            return;
+        }
+
+        try {
+            const appId = "your-app-id";
+            const trackerCollectionRef = collection(db, `artifacts/${appId}/users/${currentUser.uid}/tracker-entries`);
+            await addDoc(trackerCollectionRef, {
+                symptoms: symptoms,
+                mood: mood,
+                timestamp: serverTimestamp()
+            });
+            displayMessage('Tracker entry saved successfully!', 'success');
+            symptomsInput.value = '';
+            moodSelect.value = '';
+        } catch (error) {
+            console.error("Error saving tracker entry:", error);
+            displayMessage(`Failed to save entry: ${error.message}`, 'error');
+        }
+    });
+
+  </script>
+</body>
+</html>
