@@ -1,0 +1,2740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oncology Alliance</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Google Fonts - Inter and Playfair Display for headings -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-papm1QwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Add EmailJS SDK before the closing head tag -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init("OSTogypwaMW6XWs_c"); // Updated with your EmailJS public key
+    })();
+  </script>
+  <link rel="icon" type="image/png" href="upscalemedia-transformed.png">
+  <style>
+    /* Custom CSS for the slideIn animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .animate-slideIn {
+      animation: slideIn 1.5s ease-out;
+    }
+
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    /* Background styling */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(120deg, #e0f7fa 0%, #f8faff 100%);
+      background-size: 200% 200%;
+      animation: bgMove 10s ease-in-out infinite;
+      color: #0d47a1;
+      overflow-x: hidden; /* Prevent horizontal scroll on small screens */
+    }
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Main content area with frosted glass effect */
+    .main-content {
+      backdrop-filter: blur(8px);
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    /* Story card styling */
+    .story-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease-in-out;
+    }
+    .story-card:hover {
+      transform: translateY(-5px);
+    }
+    .story-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .story-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .story-meta {
+      flex: 1;
+    }
+    .story-author {
+      font-weight: 600;
+      color: #0d47a1;
+    }
+    .story-date {
+      font-size: 0.875rem;
+      color: #718096;
+    }
+    .story-content {
+      color: #4a5568;
+      line-height: 1.6;
+    }
+    .story-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    .story-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #718096;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: color 0.2s ease-in-out;
+    }
+    .story-action-btn:hover {
+      color: #1976d2;
+    }
+    /* Hide all main content sections by default; JS will show the appropriate one */
+    #auth-forms-container, #dashboard, #home-content-internal, #about-content, #landing-page-content, #donate-content, #resources-content {
+      display: none;
+    }
+
+    /* Main layout container for sidebar and content */
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    @media (min-width: 768px) {
+      .main-layout {
+        flex-direction: row;
+      }
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      background: linear-gradient(to bottom, #0a3d62, #001f3f); /* Dark blue gradient for sidebar */
+      color: white;
+      padding: 1.5rem; /* Default padding for mobile/expanded */
+      width: 100%; /* Full width on small screens */
+      min-height: 80px; /* Min height for small screens (horizontal menu) */
+      display: flex;
+      flex-direction: row; /* Horizontal layout for small screens */
+      justify-content: center; /* Centered for mobile */
+      align-items: center;
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+      z-index: 50;
+      transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+      overflow: hidden;
+    }
+
+    /* Styles for sidebar links */
+    .sidebar a {
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease-in-out;
+      padding: 0.75rem 1rem;
+      font-size: 1.125rem;
+      text-align: center;
+      width: auto;
+      position: relative;
+      border-radius: 8px;
+      margin: 0.25rem 0;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .sidebar a svg {
+      transition: transform 0.2s ease-out;
+      min-width: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .sidebar a:hover svg {
+      transform: scale(1.1);
+    }
+
+    @media (min-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 80px; /* Reduced collapsed width for cleaner look */
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center; /* Center items when collapsed */
+        padding: 1.5rem 0.5rem;
+      }
+
+      .sidebar:hover {
+        width: 240px; /* Reduced expanded width */
+        align-items: flex-start; /* Align items to start when expanded */
+        padding: 1.5rem 1rem;
+      }
+
+      .sidebar .menu-title {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        padding: 0 0.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-align: center;
+        width: 100%;
+      }
+
+      .sidebar:hover .menu-title {
+        opacity: 1;
+      }
+
+      .sidebar a {
+        padding: 0.75rem;
+        font-size: 0; /* Hide text when collapsed */
+        width: 100%;
+        justify-content: center; /* Center icons when collapsed */
+        border-radius: 8px;
+        margin: 0.25rem 0;
+      }
+
+      .sidebar:hover a {
+        padding: 0.75rem 1rem;
+        font-size: 1rem; /* Show text when expanded */
+        justify-content: flex-start; /* Align to start when expanded */
+      }
+
+      .sidebar a svg {
+        margin: 0; /* Remove margin when collapsed */
+      }
+
+      .sidebar:hover a svg {
+        margin-right: 0.75rem; /* Add margin when expanded */
+      }
+
+      /* Add tooltips for collapsed state */
+      .sidebar a::after {
+        content: attr(data-title);
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease-in-out;
+        margin-left: 0.5rem;
+      }
+
+      .sidebar a:hover::after {
+        opacity: 1;
+      }
+
+      .sidebar:hover a::after {
+        display: none; /* Hide tooltips when sidebar is expanded */
+      }
+    }
+
+    /* Main content area adjustments */
+    .main-content {
+      flex-grow: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    @media (min-width: 768px) {
+      .main-content {
+        margin-left: 80px; /* Match new collapsed sidebar width */
+        width: calc(100% - 80px);
+      }
+    }
+
+    /* Common styles for all content sections */
+    #landing-page-content,
+    #auth-forms-container form,
+    #dashboard,
+    #home-content-internal,
+    #about-content,
+    #donate-content,
+    #resources-content {
+      background-color: #f0f8ff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Header styles for all sections */
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #0d47a1;
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      font-size: 1.25rem;
+      color: #4a5568;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Resource cards styling */
+    .resource-category-card {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+      width: 100%;
+      text-align: left;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .resource-category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-category-card h3 {
+      color: #0d47a1;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e0f2f7;
+    }
+
+    .resource-category-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .resource-category-card li {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background-color: #f8faff;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .resource-category-card li:hover {
+      background-color: #e0f2f7;
+    }
+
+    .resource-category-card a {
+      color: #1976d2;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .resource-category-card a:hover {
+      color: #2196f3;
+    }
+
+    /* Tracker section styling */
+    .tracker-section {
+      background-color: #ffffff;
+      border: 1px solid #e0f2f7;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-top: 1.5rem;
+      width: 100%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .tracker-section h3 {
+      color: #0d47a1;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .tracker-section form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .tracker-section label {
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    .tracker-section textarea,
+    .tracker-section select {
+      padding: 0.75rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .tracker-section textarea:focus,
+    .tracker-section select:focus {
+      border-color: #2196f3;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      outline: none;
+    }
+
+    /* Entry items styling */
+    .entry-item {
+      background-color: #f8faff;
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #e0f2f7;
+    }
+
+    .entry-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .entry-item p {
+      margin: 0.5rem 0;
+    }
+
+    .entry-item .date {
+      color: #1976d2;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    /* Quick links section */
+    .quick-links {
+      background-color: #f8faff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-top: 2rem;
+    }
+
+    .quick-links h3 {
+      color: #0d47a1;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .quick-links ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .quick-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .quick-links a {
+      color: #1976d2;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .quick-links a:hover {
+      background-color: #e0f2f7;
+      color: #2196f3;
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1565c0;
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+    }
+
+    /* Rest of your original styles */
+    .text-blue-900 { color: #0d47a1; }
+    .text-blue-800 { color: #1565c0; }
+    .text-blue-700 { color: #1976d2; }
+    .text-blue-600 { color: #2196f3; }
+    .text-gray-700 { color: #4a5568; }
+    .text-gray-500 { color: #718096; }
+
+    input, textarea, select {
+      background-color: #ffffff;
+    }
+
+    .bg-blue-700 { background-color: #1976d2; }
+    .hover\:bg-blue-800:hover { background-color: #1565c0; }
+    .bg-green-600 { background-color: #28a745; }
+    .hover\:bg-green-700:hover { background-color: #218838; }
+    .bg-yellow-500 { background-color: #ffc107; }
+    .hover\:bg-yellow-600:hover { background-color: #e0a800; }
+    .bg-red-600 { background-color: #dc3545; }
+    .hover\:bg-red-700:hover { background-color: #c82333; }
+
+    /* Responsive layout improvements */
+    @media (max-width: 768px) {
+      .main-layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        padding: 0.75rem;
+        background: linear-gradient(to right, #0a3d62, #001f3f);
+        z-index: 1000;
+      }
+
+      .sidebar nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap; /* Allow nav items to wrap if needed */
+      }
+
+      .sidebar a {
+        flex-direction: column;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        text-align: center;
+        margin-bottom: 0.25rem;
+      }
+
+      .sidebar a svg {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 0.25rem;
+      }
+
+      .main-content {
+        margin-left: 0;
+        margin-bottom: 6rem; /* Increased to avoid overlap with sidebar and floating buttons */
+        width: 100%;
+        padding: 1rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.75rem;
+      }
+
+      .section-header p {
+        font-size: 1rem;
+      }
+
+      /* Add margin to header/logo to avoid overlap */
+      header.text-center {
+        margin-bottom: 1.5rem;
+      }
+      .logo {
+        margin-bottom: 1rem !important;
+      }
+      /* Stack forms and buttons vertically */
+      #auth-forms-container {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+      }
+      #auth-forms-container form {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: 98vw !important;
+      }
+      /* Ensure forms and buttons do not overflow */
+      input, textarea, select, button {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      /* Ensure modals have padding from screen edges */
+      #feedback-modal .modal-content,
+      #new-feedback-modal > div,
+      #theme-modal .theme-modal-content {
+        margin: 2vw auto;
+      }
+      /* Floating buttons: stack below theme button on mobile */
+      #theme-switch {
+        top: 16px !important;
+        right: 16px !important;
+      }
+      #technoblade-icon {
+        top: 68px !important;
+        right: 16px !important;
+        bottom: unset !important;
+        margin-top: 8px !important;
+      }
+      #new-feedback-btn {
+        top: 120px !important;
+        right: 16px !important;
+        bottom: unset !important;
+        margin-top: 8px !important;
+      }
+      #technoblade-toast {
+        right: 80px;
+        top: 180px !important;
+        bottom: unset !important;
+      }
+    }
+    /* Ensure floating buttons are always above sidebar/footer */
+    #new-feedback-btn, #technoblade-icon, #technoblade-toast {
+      z-index: 30010 !important;
+    }
+    /* Add margin between floating buttons on all screens */
+    #new-feedback-btn {
+      margin-bottom: 1.5rem;
+    }
+    #technoblade-icon {
+      margin-bottom: 1.5rem;
+    }
+    /* Ensure modals are always above floating buttons */
+    #feedback-modal, #new-feedback-modal, #theme-modal {
+      z-index: 40000 !important;
+    }
+
+    /* Desktop layout improvements */
+    @media (min-width: 769px) {
+      .main-layout {
+        flex-direction: row;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 80px;
+        padding: 1.5rem 0.5rem;
+        transition: width 0.3s ease;
+      }
+
+      .sidebar:hover {
+        width: 200px;
+      }
+
+      .main-content {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+        padding: 2rem;
+      }
+
+      .section-header h2 {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* Content container improvements */
+    #landing-page-content,
+    #auth-forms-container form,
+    #dashboard,
+    #home-content-internal,
+    #about-content,
+    #donate-content,
+    #resources-content,
+    #product-content,
+    #story-content {
+      width: 100%;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      #landing-page-content,
+      #auth-forms-container form,
+      #dashboard,
+      #home-content-internal,
+      #about-content,
+      #donate-content,
+      #resources-content,
+      #product-content,
+      #story-content {
+        padding: 1.5rem;
+        margin: 1rem auto;
+      }
+    }
+
+    /* Grid improvements for product features and stories */
+    .product-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .stories-feed {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .product-features,
+      .stories-feed {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Form improvements */
+    #story-form,
+    #tracker-form {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Card improvements */
+    .story-card,
+    .feature-card,
+    .resource-category-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .story-card .story-content {
+      flex-grow: 1;
+    }
+
+    /* Button improvements */
+    .btn {
+      width: auto;
+      min-width: 120px;
+      margin: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .btn {
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+    }
+
+    /* Header improvements */
+    header {
+      padding: 1rem;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+      header p {
+        font-size: 1rem;
+      }
+    }
+
+    /* Message container improvements */
+    #message-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 1rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Auth forms container improvements */
+    #auth-forms-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      #auth-forms-container {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    /* Tracker section improvements */
+    .tracker-section {
+      width: 100%;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    /* Quick links improvements */
+    .quick-links {
+      width: 100%;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    /* Resource cards improvements */
+    .resource-category-card {
+      width: 100%;
+      max-width: 800px;
+      margin: 1.5rem auto;
+    }
+
+    /* --- New Accent Color --- */
+    :root {
+      --accent: #8e24aa;
+    }
+    /* --- Button Hover Effects --- */
+    .btn, .btn-primary, .btn-success, .btn-danger {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover, .btn-primary:hover, .btn-success:hover, .btn-danger:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(142,36,170,0.15);
+    }
+    /* --- Section Fade-in Animation --- */
+    @keyframes fadeInSection {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-section {
+      animation: fadeInSection 1.2s cubic-bezier(.39,.575,.565,1) both;
+    }
+    /* --- Card Shadow Improvements --- */
+    .story-card, .feature-card, .resource-category-card {
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .story-card:hover, .feature-card:hover, .resource-category-card:hover {
+      box-shadow: 0 8px 24px rgba(142,36,170,0.18);
+      transform: translateY(-8px) scale(1.02);
+    }
+    /* --- Typography Tweaks --- */
+    h1, h2, h3, .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      letter-spacing: 0.5px;
+    }
+    .section-header h2 {
+      letter-spacing: 1px;
+    }
+    /* --- Accent Color Usage --- */
+    .accent {
+      color: var(--accent);
+    }
+    .bg-accent {
+      background-color: var(--accent);
+      color: #fff;
+    }
+    /* --- Accessibility: Focus Styles --- */
+    a:focus, button:focus, input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    /* --- Accessibility: High Contrast for Important Text --- */
+    .important-text {
+      color: #222;
+      background: #fffbe7;
+      padding: 0.2em 0.5em;
+      border-radius: 0.3em;
+    }
+    /* --- Micro-interactions: Spinner --- */
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* --- Micro-interactions: Checkmark --- */
+    .checkmark {
+      display: inline-block;
+      color: #43a047;
+      font-size: 1.5em;
+      vertical-align: middle;
+      margin-left: 0.5em;
+    }
+    /* --- Footer Styles --- */
+    footer {
+      background: #0a3d62;
+      color: #fff;
+      text-align: center;
+      padding: 1.5rem 0 1rem 0;
+      margin-top: 3rem;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+    .footer-links {
+      margin: 0.5rem 0 1rem 0;
+    }
+    .footer-links a {
+      color: #fff;
+      margin: 0 0.75rem;
+      text-decoration: underline;
+      font-size: 1.1em;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+    /* --- Avatar Styles --- */
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e0e0e0;
+      display: inline-block;
+      font-weight: bold;
+      color: #fff;
+      background-color: var(--accent);
+      text-align: center;
+      line-height: 40px;
+      font-size: 1.2em;
+    }
+    /* --- Motivational Quote --- */
+    .motivation {
+      font-style: italic;
+      color: var(--accent);
+      margin-top: 0.5em;
+      font-size: 1.1em;
+    }
+    /* Technoblade Icon Styles */
+    #technoblade-icon {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 9999;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      border: 2px solid #8e24aa;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    #technoblade-icon:hover {
+      box-shadow: 0 4px 16px #8e24aa44;
+      transform: translateY(-50%) scale(1.08);
+    }
+    /* Toast Message Styles */
+    #technoblade-toast {
+      position: fixed;
+      right: 80px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #8e24aa;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 1.5rem;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 10000;
+    }
+    #technoblade-toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* Light/Dark Mode Modal Styles */
+    #theme-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 20000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s;
+    }
+    #theme-modal .theme-modal-content {
+      background: #fff;
+      color: #222;
+      padding: 2.5rem 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      text-align: center;
+      min-width: 320px;
+    }
+    #theme-modal .theme-btn {
+      margin: 1.5rem 1rem 0 1rem;
+      padding: 0.75rem 2.5rem;
+      font-size: 1.2rem;
+      border-radius: 0.75rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    #theme-modal .theme-btn.light {
+      background: #f0f8ff;
+      color: #222;
+      border: 2px solid #8e24aa;
+    }
+    #theme-modal .theme-btn.light:hover {
+      background: #e0e7ef;
+      color: #8e24aa;
+      transform: scale(1.05);
+    }
+    #theme-modal .theme-btn.dark {
+      background: #22223b;
+      color: #fff;
+      border: 2px solid #8e24aa;
+    }
+    #theme-modal .theme-btn.dark:hover {
+      background: #393963;
+      color: #8e24aa;
+      transform: scale(1.05);
+    }
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background: linear-gradient(120deg, #23243a 0%, #181825 100%) !important;
+      color: #f0f8ff !important;
+    }
+    body.dark-mode .main-content,
+    body.dark-mode #landing-page-content,
+    body.dark-mode #auth-forms-container form,
+    body.dark-mode #dashboard,
+    body.dark-mode #home-content-internal,
+    body.dark-mode #about-content,
+    body.dark-mode #donate-content,
+    body.dark-mode #resources-content,
+    body.dark-mode #product-content,
+    body.dark-mode #story-content,
+    body.dark-mode .tracker-section,
+    body.dark-mode .modal-content {
+      background: #23243a !important;
+      color: #f0f8ff !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    body.dark-mode .section-header h2,
+    body.dark-mode .text-blue-900,
+    body.dark-mode .text-blue-800,
+    body.dark-mode .text-blue-700,
+    body.dark-mode .text-blue-600 {
+      color: #e0aaff !important;
+    }
+    body.dark-mode .story-card,
+    body.dark-mode .feature-card,
+    body.dark-mode .resource-category-card {
+      background: #23243a !important;
+      color: #f0f8ff !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    body.dark-mode .btn,
+    body.dark-mode .btn-primary,
+    body.dark-mode .btn-success,
+    body.dark-mode .btn-danger {
+      color: #fff !important;
+    }
+    body.dark-mode .btn-primary {
+      background: #8e24aa !important;
+    }
+    body.dark-mode .btn-primary:hover {
+      background: #6d1b7b !important;
+    }
+    body.dark-mode .sidebar {
+      background: linear-gradient(to bottom, #181825, #23243a) !important;
+      color: #fff !important;
+    }
+    body.dark-mode .footer-links a {
+      color: #e0aaff !important;
+    }
+    body.dark-mode footer {
+      background: #181825 !important;
+      color: #e0aaff !important;
+    }
+    body.dark-mode #technoblade-icon {
+      background: #23243a !important;
+      border-color: #e0aaff !important;
+    }
+    body.dark-mode #technoblade-toast {
+      background: #e0aaff !important;
+      color: #23243a !important;
+    }
+    /* Theme Switch Styles */
+    #theme-switch {
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      cursor: pointer;
+      border: 2px solid #8e24aa;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    #theme-switch:hover {
+      box-shadow: 0 4px 16px #8e24aa44;
+      background: #f0e6ff;
+    }
+    body.dark-mode #theme-switch {
+      background: #23243a;
+      color: #e0aaff;
+      border-color: #e0aaff;
+    }
+    /* Accessibility Menu Styles */
+    #accessibility-menu {
+      position: fixed;
+      left: 24px;
+      bottom: 24px;
+      z-index: 20010;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      align-items: flex-start;
+    }
+    #accessibility-menu button {
+      margin: 0.2rem 0;
+      padding: 0.3rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #8e24aa;
+      background: #f0f8ff;
+      color: #8e24aa;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    #accessibility-menu button:hover {
+      background: #e0aaff;
+      color: #23243a;
+    }
+    body.high-contrast, body.high-contrast .main-content, body.high-contrast .story-card, body.high-contrast .feature-card, body.high-contrast .resource-category-card {
+      background: #000 !important;
+      color: #fff !important;
+      border-color: #fff !important;
+    }
+    /* Feedback Modal Styles */
+    #feedback-btn {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 20030;
+      background: #8e24aa;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      transition: background 0.2s;
+    }
+    #feedback-btn:hover {
+      background: #6d1b7b;
+    }
+    #feedback-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 20031;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #feedback-modal .modal-content {
+      background: #fff;
+      color: #23243a;
+      padding: 2rem 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      min-width: 320px;
+      max-width: 90vw;
+      text-align: center;
+    }
+    #feedback-modal input, #feedback-modal textarea {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #8e24aa;
+      font-size: 1rem;
+    }
+    #feedback-modal button[type="submit"] {
+      background: #8e24aa;
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #feedback-modal button[type="submit"]:hover {
+      background: #6d1b7b;
+    }
+    #feedback-modal .close {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      font-size: 2rem;
+      color: #8e24aa;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    /* Inputs, textareas, selects in dark mode */
+    body.dark-mode input,
+    body.dark-mode textarea,
+    body.dark-mode select {
+      background: #181825 !important;
+      color: #fff !important;
+      border: 1px solid #444 !important;
+    }
+    body.dark-mode input::placeholder,
+    body.dark-mode textarea::placeholder {
+      color: #b0b0c3 !important;
+      opacity: 1;
+    }
+    /* Inputs, textareas, selects in light mode */
+    input,
+    textarea,
+    select {
+      background: #fff;
+      color: #23243a;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: #888;
+      opacity: 1;
+    }
+    /* Responsive modal and popup improvements */
+    #feedback-modal .modal-content,
+    #new-feedback-modal > div,
+    #theme-modal .theme-modal-content {
+      width: 90vw !important;
+      max-width: 400px !important;
+      min-width: unset !important;
+      box-sizing: border-box;
+    }
+    @media (min-width: 500px) {
+      #feedback-modal .modal-content,
+      #new-feedback-modal > div,
+      #theme-modal .theme-modal-content {
+        max-width: 500px !important;
+      }
+    }
+    /* Responsive image improvements */
+    img, .logo, .story-avatar, .user-avatar {
+      max-width: 100%;
+      height: auto;
+    }
+    /* Ensure buttons and inputs are large enough for touch */
+    button, input, textarea, select {
+      min-height: 44px;
+      font-size: 1rem;
+    }
+    /* Responsive padding for main content */
+    .main-content {
+      padding: 1rem;
+    }
+    @media (min-width: 768px) {
+      .main-content {
+        padding: 2rem;
+      }
+    }
+    /* Responsive section widths */
+    #landing-page-content,
+    #auth-forms-container form,
+    #dashboard,
+    #home-content-internal,
+    #about-content,
+    #donate-content,
+    #resources-content,
+    #product-content,
+    #story-content {
+      width: 100%;
+      max-width: 98vw;
+      box-sizing: border-box;
+    }
+    @media (min-width: 600px) {
+      #landing-page-content,
+      #auth-forms-container form,
+      #dashboard,
+      #home-content-internal,
+      #about-content,
+      #donate-content,
+      #resources-content,
+      #product-content,
+      #story-content {
+        max-width: 800px;
+      }
+    }
+    @media (min-width: 1024px) {
+      #landing-page-content,
+      #auth-forms-container form,
+      #dashboard,
+      #home-content-internal,
+      #about-content,
+      #donate-content,
+      #resources-content,
+      #product-content,
+      #story-content {
+        max-width: 1200px;
+      }
+    }
+    /* Prevent fixed widths on sidebar and modals on mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: 100vw !important;
+      }
+      #feedback-modal .modal-content,
+      #new-feedback-modal > div,
+      #theme-modal .theme-modal-content {
+        width: 98vw !important;
+        max-width: 98vw !important;
+        min-width: unset !important;
+      }
+    }
+    /* Ensure no horizontal scroll for all content */
+    html, body, .main-layout, .main-content {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    /* Responsive font sizes for headings */
+    h1, .section-header h2 {
+      font-size: 2rem;
+    }
+    @media (min-width: 600px) {
+      h1, .section-header h2 {
+        font-size: 2.5rem;
+      }
+    }
+    @media (min-width: 1024px) {
+      h1, .section-header h2 {
+        font-size: 3rem;
+      }
+    }
+    /* Responsive grid for product features and stories */
+    .product-features, .stories-feed {
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 600px) {
+      .product-features, .stories-feed {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+    }
+    @media (min-width: 1024px) {
+      .product-features, .stories-feed {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <!-- Language Selector -->
+  <div id="google_translate_element" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 20020;"></div>
+  <!-- Fixed Theme Switch Button -->
+  <div id="theme-switch" title="Toggle light/dark mode" style="position:fixed;top:24px;right:24px;z-index:30020;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.12);font-size:1.8rem;cursor:pointer;border:2px solid #8e24aa;transition:box-shadow 0.2s,background 0.2s;"><i id="theme-switch-icon" class="fa fa-moon"></i></div>
+  <!-- Technoblade Icon (square, shows message below when clicked) -->
+  <div id="technoblade-icon" title="Technoblade Never Dies!" style="position:fixed;top:84px;right:24px;z-index:30019;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:2rem;cursor:pointer;border:2px solid #8e24aa;transition:box-shadow 0.2s,transform 0.2s;margin-top:12px;">
+    <img src="technoblade.png" alt="Technoblade Icon" style="width:36px;height:36px;object-fit:cover;" />
+  </div>
+  <div id="technoblade-message" style="display:none;position:fixed;top:136px;right:24px;z-index:30020;background:#fff;border:2px solid #8e24aa;border-radius:8px;padding:0.75rem 1.25rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:1rem;color:#8e24aa;min-width:180px;text-align:center;">Technoblade never dies!</div>
+  <!-- Feedback Button (bottom right, only one) -->
+  <button id="new-feedback-btn" style="position:fixed;right:32px;bottom:32px;z-index:30000;background:#8e24aa;color:#fff;border:none;border-radius:50%;width:56px;height:56px;font-size:2rem;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;">&#9993;</button>
+  <div id="new-feedback-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:30001;align-items:center;justify-content:center;">
+    <div style="background:#fff;color:#23243a;padding:2rem 2.5rem;border-radius:1.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.18);min-width:320px;max-width:90vw;text-align:center;position:relative;">
+      <button id="close-new-feedback" style="position:absolute;top:1.5rem;right:2rem;font-size:2rem;color:#8e24aa;cursor:pointer;background:none;border:none;">&times;</button>
+      <h2>Send Feedback</h2>
+      <form id="new-feedback-form">
+        <input type="text" id="new-feedback-name" placeholder="Your Name" required style="width:100%;margin:0.5rem 0;padding:0.75rem;border-radius:0.5rem;border:1px solid #8e24aa;font-size:1rem;" />
+        <input type="email" id="new-feedback-email" placeholder="Your Email" required style="width:100%;margin:0.5rem 0;padding:0.75rem;border-radius:0.5rem;border:1px solid #8e24aa;font-size:1rem;" />
+        <textarea id="new-feedback-message" rows="5" placeholder="Your feedback..." required style="width:100%;margin:0.5rem 0;padding:0.75rem;border-radius:0.5rem;border:1px solid #8e24aa;font-size:1rem;"></textarea>
+        <button type="submit" style="background:#8e24aa;color:#fff;border:none;border-radius:0.5rem;padding:0.75rem 2rem;font-size:1.1rem;margin-top:1rem;cursor:pointer;transition:background 0.2s;">Send</button>
+      </form>
+      <div id="new-feedback-status" style="margin-top:1rem;"></div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="w-full flex md:flex-col gap-4 md:gap-6">
+        <div class="menu-title text-2xl md:text-3xl font-bold mb-4 hidden md:block">Menu</div>
+        <a href="#" id="nav-home" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="#" id="nav-dashboard" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#" id="nav-resources" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16a2 2 0 0 0 2 2h14"/></svg>
+          Resources
+        </a>
+        <a href="#" id="nav-about" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          About
+        </a>
+        <a href="#" id="nav-donate" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          Donate
+        </a>
+        <a href="#" id="nav-product" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          Product
+        </a>
+        <a href="#" id="nav-story" class="rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Your Story
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="text-center p-8 fade-in-section">
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+          <img src="https://www.dropbox.com/scl/fi/k2um9myyydibf2qzj7yio/logo.png.png?rlkey=gk4yngxe0izckyvhegctvmji0&st=gr84rn37&raw=1" alt="Oncology Alliance Logo" class="logo" style="margin: 0 auto 1rem auto; display: block;" />
+        </div>
+        <h1 class="text-5xl font-extrabold animate-slideIn text-blue-900 accent">Welcome to the Oncology Alliance Centre</h1>
+        <p class="text-xl mt-2 font-medium text-blue-800">We try to help cancer patients using technology</p>
+        <div class="motivation" id="motivation-quote"></div>
+      </header>
+
+      <div id="message-container" class="mt-4 text-center fade-in-section">
+        <p id="auth-message" class="font-medium"></p>
+      </div>
+
+      <!-- Landing Page Content -->
+      <div id="landing-page-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-lg fade-in-section">
+        <div class="section-header">
+          <h2>Empowering Cancer Patients Through Technology</h2>
+          <p>Join our community committed to providing innovative solutions and support for those affected by cancer.</p>
+        </div>
+        <button
+          id="get-started-btn"
+          class="btn btn-success"
+        >
+          Get Started
+        </button>
+      </div>
+
+      <!-- Authentication Forms Container -->
+      <div id="auth-forms-container" class="auth-container fade-in-section">
+        <!-- Sign Up Form -->
+        <form id="signup-form" class="bg-white p-8 rounded-2xl shadow-xl flex flex-col w-80 gap-5 transform transition-all duration-300 ease-in-out hover:scale-105">
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">Sign Up</h2>
+          <input
+            type="text"
+            id="signup-username"
+            placeholder="Username"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="email"
+            id="signup-email"
+            placeholder="Email"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <div id="verification-code-container" class="hidden">
+            <input
+              type="text"
+              id="verification-code"
+              placeholder="Enter verification code"
+              class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 w-full"
+            />
+            <p class="text-sm text-gray-500 mt-1">Check your email for the verification code</p>
+          </div>
+          <input
+            type="password"
+            id="signup-password"
+            placeholder="Password"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <button
+            type="submit"
+            class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+          >
+            Create Account
+          </button>
+          <span
+            id="switch-to-login"
+            class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+          >
+            Already have an account? Login
+          </span>
+        </form>
+
+        <!-- Login Form -->
+        <form id="login-form" class="flex flex-col gap-5">
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">Login</h2>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="Email"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Password"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+            required
+          />
+          <button
+            type="submit"
+            class="p-3 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+          >
+            Login
+          </button>
+          <span
+            id="switch-to-signup"
+            class="text-blue-700 cursor-pointer text-center underline text-sm hover:text-blue-800 transition duration-200"
+          >
+            Don't have an account? Sign Up
+          </span>
+        </form>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div id="dashboard" class="dashboard mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg fade-in-section">
+        <div class="section-header">
+          <h2><span id="welcome-username">Welcome</span> to Your Personalized Space!</h2>
+          <p>Track your symptoms, manage your health, and access personalized resources.</p>
+        </div>
+        <p id="dashboard-message" class="text-green-600 font-medium"></p>
+        <p id="user-id-display" class="text-sm text-gray-500 mt-2">
+          Your User ID: <span class="font-mono break-all" id="user-uid-span"></span>
+        </p>
+
+        <!-- Symptom and Mood Tracker Section -->
+        <div class="tracker-section">
+          <h3>Daily Tracker</h3>
+          <form id="tracker-form" class="flex flex-col gap-3">
+            <label for="symptoms">Symptoms/Notes:</label>
+            <textarea
+              id="symptoms"
+              rows="3"
+              placeholder="e.g., Fatigue (mild), Nausea (moderate), Good energy after lunch."
+            ></textarea>
+
+            <label for="mood">Mood:</label>
+            <select id="mood">
+              <option value="">Select Mood</option>
+              <option value="Excellent">😀 Excellent</option>
+              <option value="Good">🙂 Good</option>
+              <option value="Neutral">😐 Neutral</option>
+              <option value="Bad">🙁 Bad</option>
+              <option value="Very Bad">😞 Very Bad</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">
+              Save Entry
+            </button>
+          </form>
+
+          <div class="mt-6">
+            <h4 class="text-xl font-semibold text-blue-700 mb-3">Your Recent Entries:</h4>
+            <div id="tracker-entries-list" class="flex flex-col gap-3">
+              <!-- Tracker entries will be loaded here by JavaScript -->
+              <p class="text-gray-500">No entries yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medication Tracker Section -->
+        <div class="tracker-section bg-white mt-8">
+          <h3>Medication Tracker</h3>
+          <form id="medication-form" class="flex flex-col gap-3">
+            <label for="medication-name">Medication Name:</label>
+            <input id="medication-name" type="text" placeholder="e.g., Ondansetron" required />
+            <label for="medication-dose">Dose:</label>
+            <input id="medication-dose" type="text" placeholder="e.g., 8mg" required />
+            <label for="medication-time">Time to Take:</label>
+            <input id="medication-time" type="time" required />
+            <button type="submit" class="btn btn-primary">Add Medication</button>
+          </form>
+          <div class="mt-6">
+            <h4 class="text-xl font-semibold text-blue-700 mb-3">Today's Medications:</h4>
+            <ul id="medication-list" class="flex flex-col gap-2"></ul>
+          </div>
+        </div>
+
+        <div class="quick-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#" class="text-blue-600 hover:underline">Find Resources</a></li>
+            <li><a href="#" class="text-blue-600 hover:underline">Support Groups</a></li>
+            <li><a href="#" class="text-blue-600 hover:underline">Latest Research</a></li>
+          </ul>
+        </div>
+        <button id="logout-btn" class="btn btn-danger">
+          Logout
+        </button>
+      </div>
+
+      <!-- Home Content -->
+      <div id="home-content-internal" class="text-center fade-in-section">
+        <h2 class="text-3xl font-semibold text-blue-800">Our Mission</h2>
+        <p class="text-lg text-gray-700">The Oncology Alliance Centre is dedicated to leveraging cutting-edge technology to improve the lives of cancer patients worldwide. We strive to provide accessible information, connect patients with support networks, and accelerate research breakthroughs.</p>
+        <p class="text-md text-gray-600 mt-4">Explore our resources and join our community to make a difference.</p>
+      </div>
+
+      <!-- About Content -->
+      <div id="about-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 w-full max-w-lg fade-in-section">
+        <div class="section-header">
+          <h2>About Us</h2>
+          <p>Founded in 2023, Oncology Alliance was born from a passion to combat cancer with innovation.</p>
+        </div>
+        <p class="text-lg text-gray-700">Our team comprises oncologists, data scientists, software engineers, and patient advocates committed to creating impactful solutions.</p>
+        <p class="text-md text-gray-600 mt-4">Our core values: Compassion, Innovation, Collaboration, and Empowerment.</p>
+      </div>
+
+      <!-- Resources Content -->
+      <div id="resources-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-2xl fade-in-section">
+        <div class="section-header">
+          <h2>Personalized Resource Hub</h2>
+          <p>Access curated information and support tailored to your journey.</p>
+        </div>
+
+        <div class="resource-category-card">
+          <h3>Treatment Guides</h3>
+          <ul>
+            <li><a href="https://www.cancer.org/treatment.html" target="_blank">Understanding Chemotherapy</a></li>
+            <li><a href="https://www.cancer.gov/about-cancer/treatment/types/radiation-therapy" target="_blank">Radiation Therapy Explained</a></li>
+            <li><a href="https://www.cancer.org/treatment/treatments-and-side-effects/complementary-and-integrative-medicine.html" target="_blank">Managing Side Effects</a></li>
+          </ul>
+        </div>
+
+        <div class="resource-category-card">
+          <h3>Support Networks</h3>
+          <ul>
+            <li><a href="https://www.cancer.org/support-programs-and-services/online-communities.html" target="_blank">Online Patient Communities</a></li>
+            <li><a href="https://www.cancer.net/coping-with-cancer/social-and-emotional-effects/support-groups" target="_blank">Finding Local Support Groups</a></li>
+            <li><a href="https://www.cancercare.org/get_help" target="_blank">Caregiver Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="resource-category-card">
+          <h3>Nutrition & Wellness</h3>
+          <ul>
+            <li><a href="https://www.cancer.org/cancer/survivorship/nutrition-physical-activity.html" target="_blank">Eating Well During Treatment</a></li>
+            <li><a href="https://www.cancer.gov/about-cancer/causes-prevention/risk/obesity/physical-activity-fact-sheet" target="_blank">Physical Activity Guidelines</a></li>
+            <li><a href="https://www.cancer.org/healthy/eat-healthy-get-active/eating-well-during-treatment.html" target="_blank">Recipes for Cancer Patients</a></li>
+          </ul>
+        </div>
+
+        <div class="resource-category-card">
+          <h3>Latest Research</h3>
+          <ul>
+            <li><a href="https://www.cancer.gov/clinicaltrials" target="_blank">Clinical Trials Finder</a></li>
+            <li><a href="https://www.aacr.org/patients-survivors/" target="_blank">Breakthroughs in Oncology</a></li>
+            <li><a href="https://www.who.int/news-room/fact-sheets/detail/cancer" target="_blank">Global Cancer Statistics</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Donate Content -->
+      <div id="donate-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-lg fade-in-section">
+        <div class="section-header">
+          <h2>Support Our Cause</h2>
+          <p>Your generous donations enable us to continue our vital work in cancer research, patient support, and technology development.</p>
+        </div>
+        <p class="text-md text-gray-600 mt-4">Every contribution, big or small, makes a significant impact on the lives of cancer patients and their families.</p>
+        <button
+          class="btn btn-primary"
+          onclick="alert('Thank you for your interest in donating! This is a placeholder for a donation process.');"
+        >
+          Make a Donation
+        </button>
+        <p class="text-sm text-gray-500 mt-4">Thank you for your kindness!</p>
+      </div>
+
+      <!-- Product Content -->
+      <div id="product-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-2xl fade-in-section">
+        <div class="section-header">
+          <h2>Our New Product</h2>
+          <p>Discover our innovative solution designed to enhance cancer care and patient support.</p>
+        </div>
+
+        <div class="product-features grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <div class="feature-card bg-blue-50 p-6 rounded-xl">
+            <h3 class="text-xl font-semibold text-blue-800 mb-3">Smart Tracking</h3>
+            <p class="text-gray-700">Advanced symptom tracking and monitoring system for better health management.</p>
+          </div>
+
+          <div class="feature-card bg-blue-50 p-6 rounded-xl">
+            <h3 class="text-xl font-semibold text-blue-800 mb-3">AI-Powered Insights</h3>
+            <p class="text-gray-700">Leveraging artificial intelligence to provide personalized health recommendations.</p>
+          </div>
+
+          <div class="feature-card bg-blue-50 p-6 rounded-xl">
+            <h3 class="text-xl font-semibold text-blue-800 mb-3">Real-time Updates</h3>
+            <p class="text-gray-700">Instant notifications and updates to keep you informed about your health status.</p>
+          </div>
+
+          <div class="feature-card bg-blue-50 p-6 rounded-xl">
+            <h3 class="text-xl font-semibold text-blue-800 mb-3">Secure Platform</h3>
+            <p class="text-gray-700">Your data is protected with state-of-the-art security measures.</p>
+          </div>
+        </div>
+
+        <div class="product-description mt-8 text-left w-full">
+          <h3 class="text-2xl font-semibold text-blue-800 mb-4">Coming Soon</h3>
+          <p class="text-gray-700 mb-6">Our new product is being implemented here. We're working hard to bring you a revolutionary tool that will transform the way cancer patients manage their health journey. Stay tuned for updates!</p>
+          
+          <div class="coming-soon-alert bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+            <p class="text-yellow-700">We're in the final stages of development. Sign up for our newsletter to be the first to know when we launch!</p>
+          </div>
+        </div>
+
+        <button class="btn btn-primary mt-6">
+          Join Waitlist
+        </button>
+      </div>
+
+      <!-- Your Story Content -->
+      <div id="story-content" class="mt-12 text-center bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-6 w-full max-w-3xl fade-in-section">
+        <div class="section-header">
+          <h2>Share Your Journey</h2>
+          <p>Your story can inspire and support others in their cancer journey. Share your experiences, challenges, and triumphs.</p>
+        </div>
+
+        <!-- Story Submission Form -->
+        <form id="story-form" class="w-full text-left">
+          <div class="mb-6">
+            <label for="story-title" class="block text-gray-700 font-medium mb-2">Title</label>
+            <input
+              type="text"
+              id="story-title"
+              placeholder="Give your story a title"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div class="mb-6">
+            <label for="story-content" class="block text-gray-700 font-medium mb-2">Your Story</label>
+            <textarea
+              id="story-content"
+              rows="6"
+              placeholder="Share your experience, challenges, and triumphs..."
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              required
+            ></textarea>
+          </div>
+
+          <div class="mb-6">
+            <label for="story-image" class="block text-gray-700 font-medium mb-2">Add a Photo (Optional)</label>
+            <input
+              type="file"
+              id="story-image"
+              accept="image/*"
+              class="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            Share Your Story
+          </button>
+        </form>
+
+        <!-- Stories Feed -->
+        <div class="stories-feed w-full mt-12">
+          <h3 class="text-2xl font-semibold text-blue-800 mb-6">Inspiring Stories</h3>
+          
+          <div id="stories-container" class="space-y-6">
+            <!-- Story cards will be dynamically added here -->
+            <div class="story-card">
+              <div class="story-header">
+                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop" alt="User Avatar" class="story-avatar">
+                <div class="story-meta">
+                  <div class="story-author">Sarah Johnson</div>
+                  <div class="story-date">March 15, 2024</div>
+                </div>
+              </div>
+              <h4 class="text-xl font-semibold text-blue-800 mb-3">My Journey to Recovery</h4>
+              <p class="story-content">
+                When I was first diagnosed, I felt overwhelmed and scared. But with the support of my family and the amazing medical team, I found strength I never knew I had. Today, I'm grateful for every moment and want to share my story to inspire others...
+              </p>
+              <div class="story-actions">
+                <button class="story-action-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                  <span>245</span>
+                </button>
+                <button class="story-action-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>48 Comments</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="#" onclick="showContent('about-content')"><i class="fa fa-info-circle"></i> About</a>
+      <a href="#" onclick="showContent('resources-content')"><i class="fa fa-book"></i> Resources</a>
+      <a href="#" onclick="showContent('donate-content')"><i class="fa fa-heart"></i> Donate</a>
+      <a href="#" onclick="showContent('story-content')"><i class="fa fa-book-open"></i> Stories</a>
+    </div>
+    <div>
+      &copy; <span id="footer-year"></span> Oncology Alliance. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      query,
+      orderBy,
+      limit,
+      onSnapshot,
+      serverTimestamp,
+      addDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+    // DOM Elements
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const authFormsContainer = document.getElementById('auth-forms-container');
+    const landingPageContent = document.getElementById('landing-page-content');
+    const dashboard = document.getElementById('dashboard');
+    const homeContentInternal = document.getElementById('home-content-internal');
+    const aboutContent = document.getElementById('about-content');
+    const donateContent = document.getElementById('donate-content');
+    const resourcesContent = document.getElementById('resources-content');
+
+    const signupUsername = document.getElementById('signup-username');
+    const signupEmail = document.getElementById('signup-email');
+    const signupPassword = document.getElementById('signup-password');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const logoutBtn = document.getElementById('logout-btn');
+    const switchToLoginLink = document.getElementById('switch-to-login');
+    const switchToSignupLink = document.getElementById('switch-to-signup');
+    const getStartedBtn = document.getElementById('get-started-btn');
+
+    const authMessage = document.getElementById('auth-message');
+    const dashboardMessage = document.getElementById('dashboard-message');
+    const userUidSpan = document.getElementById('user-uid-span');
+    const welcomeUsernameSpan = document.getElementById('welcome-username');
+
+    // Navigation Links
+    const navHome = document.getElementById('nav-home');
+    const navDashboard = document.getElementById('nav-dashboard');
+    const navResources = document.getElementById('nav-resources');
+    const navAbout = document.getElementById('nav-about');
+    const navDonate = document.getElementById('nav-donate');
+    const navProduct = document.getElementById('nav-product');
+    const navStory = document.getElementById('nav-story');
+
+    // Tracker Elements
+    const trackerForm = document.getElementById('tracker-form');
+    const symptomsInput = document.getElementById('symptoms');
+    const moodSelect = document.getElementById('mood');
+    const trackerEntriesList = document.getElementById('tracker-entries-list');
+
+    // Add these variables at the top with other DOM elements
+    const verificationCodeContainer = document.getElementById('verification-code-container');
+    const verificationCodeInput = document.getElementById('verification-code');
+    let verificationCode = null;
+
+    let auth;
+    let db;
+    let storage;
+    let currentUser = null;
+    let unsubscribeTracker = null;
+
+    // Function to display messages to the user
+    function displayMessage(msg, type = 'error') {
+      authMessage.textContent = msg;
+      authMessage.className = `font-medium ${type === 'error' ? 'text-red-500' : 'text-green-600'}`;
+      // Add animation for error messages
+      if (type === 'error') {
+        authMessage.classList.add('shake');
+        setTimeout(() => {
+          authMessage.classList.remove('shake');
+        }, 500);
+      }
+    }
+
+    // Function to validate email format
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Function to show a specific content section and hide others
+    function showContent(sectionId) {
+      const sections = [
+        'auth-forms-container',
+        'dashboard',
+        'home-content-internal',
+        'about-content',
+        'landing-page-content',
+        'donate-content',
+        'resources-content',
+        'product-content',
+        'story-content'
+      ];
+
+      sections.forEach(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          element.style.display = 'none';
+        }
+      });
+
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.style.display = 'flex';
+      }
+
+      // Clear any messages when navigating
+      displayMessage('');
+
+      // Handle special cases
+      if (sectionId === 'landing-page-content') {
+        if (currentUser) {
+          getStartedBtn.style.display = 'none';
+        } else {
+          getStartedBtn.style.display = 'block';
+        }
+      }
+
+      // Handle tracker listener
+      if (sectionId === 'dashboard' && currentUser && db) {
+        if (!unsubscribeTracker) {
+          attachTrackerListener(currentUser.uid);
+        }
+      } else {
+        if (unsubscribeTracker) {
+          unsubscribeTracker();
+          unsubscribeTracker = null;
+          if (trackerEntriesList) {
+            trackerEntriesList.innerHTML = '<p class="text-gray-500">No entries yet.</p>';
+          }
+        }
+      }
+
+      // Handle stories listener
+      if (sectionId === 'story-content' && currentUser && db) {
+        attachStoriesListener();
+      }
+    }
+
+    // Function to attach stories listener
+    function attachStoriesListener() {
+      if (!db) return;
+
+      const appId = "your-app-id";
+      const storiesRef = collection(db, `artifacts/${appId}/stories`);
+      const q = query(storiesRef, orderBy("timestamp", "desc"));
+
+      onSnapshot(q, (snapshot) => {
+        const storiesContainer = document.getElementById('stories-container');
+        if (!storiesContainer) return;
+
+        storiesContainer.innerHTML = '';
+        
+        if (snapshot.empty) {
+          storiesContainer.innerHTML = '<p class="text-gray-500 text-center">No stories yet. Be the first to share your journey!</p>';
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const story = doc.data();
+          const storyDate = story.timestamp ? new Date(story.timestamp.toDate()).toLocaleDateString() : 'N/A';
+          
+          const storyElement = document.createElement('div');
+          storyElement.className = 'story-card';
+          storyElement.innerHTML = `
+            <div class="story-header">
+              <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(story.authorName)}&background=0D47A1&color=fff" 
+                   alt="${story.authorName}" 
+                   class="story-avatar">
+              <div class="story-meta">
+                <div class="story-author">${story.authorName}</div>
+                <div class="story-date">${storyDate}</div>
+              </div>
+            </div>
+            <h4 class="text-xl font-semibold text-blue-800 mb-3">${story.title}</h4>
+            <p class="story-content">${story.content}</p>
+            <div class="story-actions">
+              <button class="story-action-btn" onclick="handleLike('${doc.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                <span>${story.likes || 0}</span>
+              </button>
+              <button class="story-action-btn" onclick="showComments('${doc.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>${story.comments ? story.comments.length : 0} Comments</span>
+              </button>
+            </div>
+          `;
+          storiesContainer.appendChild(storyElement);
+        });
+      });
+    }
+
+    // Function to handle story likes
+    async function handleLike(storyId) {
+      if (!currentUser) {
+        displayMessage('Please log in to like stories.', 'error');
+        return;
+      }
+
+      try {
+        const appId = "your-app-id";
+        const storyRef = doc(db, `artifacts/${appId}/stories`, storyId);
+        const storyDoc = await getDoc(storyRef);
+        
+        if (storyDoc.exists()) {
+          const story = storyDoc.data();
+          const newLikes = (story.likes || 0) + 1;
+          await updateDoc(storyRef, { likes: newLikes });
+        }
+      } catch (error) {
+        console.error("Error liking story:", error);
+        displayMessage('Failed to like story.', 'error');
+      }
+    }
+
+    // Function to show comments
+    function showComments(storyId) {
+      // Implement comments functionality
+      alert('Comments feature coming soon!');
+    }
+
+    // Function to fetch and display tracker entries
+    async function attachTrackerListener(userId) {
+      if (!db || !userId) return;
+
+      const appId = "your-app-id";
+      const trackerCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/tracker-entries`);
+      const q = query(trackerCollectionRef, orderBy("timestamp", "desc"), limit(5));
+
+      unsubscribeTracker = onSnapshot(q, (snapshot) => {
+        trackerEntriesList.innerHTML = '';
+        if (snapshot.empty) {
+          trackerEntriesList.innerHTML = '<p class="text-gray-500">No entries yet.</p>';
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const entry = doc.data();
+          const entryDate = entry.timestamp ? new Date(entry.timestamp.toDate()).toLocaleString() : 'N/A';
+          const entryElement = document.createElement('div');
+          entryElement.className = 'entry-item text-gray-700';
+          entryElement.innerHTML = `
+            <p class="font-semibold text-blue-700">${entryDate}</p>
+            <p><strong>Mood:</strong> ${entry.mood || 'N/A'}</p>
+            <p><strong>Notes:</strong> ${entry.symptoms || 'No notes'}</p>
+          `;
+          trackerEntriesList.appendChild(entryElement);
+        });
+      }, (error) => {
+        console.error("Error fetching tracker entries:", error);
+        displayMessage('Error loading tracker entries.', 'error');
+      });
+    }
+
+    // Function to switch between login and signup forms
+    function toggleAuthForms(showLogin) {
+      signupForm.style.display = showLogin ? 'none' : 'flex';
+      loginForm.style.display = showLogin ? 'flex' : 'none';
+      displayMessage('');
+      signupUsername.value = '';
+      signupEmail.value = '';
+      signupPassword.value = '';
+      loginEmail.value = '';
+      loginPassword.value = '';
+      verificationCodeContainer.classList.add('hidden');
+      verificationCodeInput.value = '';
+      verificationCode = null;
+    }
+
+    // Initialize Firebase and set up auth listener
+    window.onload = async function() {
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyAhnqjMaAIGWK3Qsz5zZyQY8-Aj5ckyA-g",
+          authDomain: "research-website-try1.firebaseapp.com",
+          projectId: "research-website-try1",
+          storageBucket: "research-website-try1.firebasestorage.app",
+          messagingSenderId: "377251930360",
+          appId: "1:377251930360:web:93b0b46a69e211f6631b0d",
+        };
+
+        if (Object.keys(firebaseConfig).length === 0) {
+          displayMessage('Firebase config is missing. Please add your Firebase project configuration.', 'error');
+          console.error('Firebase config is missing. Please add your Firebase project configuration.');
+          return;
+        }
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        storage = getStorage(app);
+
+        onAuthStateChanged(auth, async (user) => {
+          currentUser = user;
+          if (user) {
+            const docRef = doc(db, "artifacts", "your-app-id", "users", user.uid, "user-data", "profile");
+            const docSnap = await getDoc(docRef);
+
+            let username = user.email || 'Guest';
+            if (docSnap.exists() && docSnap.data().username) {
+              username = docSnap.data().username;
+            }
+
+            welcomeUsernameSpan.innerHTML = `<span class="user-avatar">${username.charAt(0).toUpperCase()}</span> Welcome, <span class="important-text">${username}</span>`;
+            showContent('dashboard');
+            userUidSpan.textContent = user.uid;
+          } else {
+            showContent('landing-page-content');
+            welcomeUsernameSpan.textContent = 'Welcome';
+            userUidSpan.textContent = '';
+          }
+        });
+      } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        displayMessage(`Firebase initialization error: ${error.message}`);
+      }
+    };
+
+    // Add this function to generate a random code
+    function generateVerificationCode() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    // Update the sendVerificationEmail function
+    async function sendVerificationEmail(email, code) {
+      try {
+        const templateParams = {
+          to_email: email,
+          verification_code: code,
+          from_name: 'Oncology Alliance',
+          message: `Your verification code is: ${code}. Please enter this code to complete your registration.`
+        };
+
+        const response = await emailjs.send(
+          'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
+          'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
+          templateParams
+        );
+
+        if (response.status === 200) {
+          return true;
+        } else {
+          throw new Error('Failed to send verification email');
+        }
+      } catch (error) {
+        console.error('Error sending verification email:', error);
+        return false;
+      }
+    }
+
+    // Update the email input event listener
+    signupEmail.addEventListener('blur', async function() {
+      const email = this.value;
+      if (email && isValidEmail(email)) {
+        try {
+          verificationCode = generateVerificationCode();
+          const emailSent = await sendVerificationEmail(email, verificationCode);
+          
+          if (emailSent) {
+            verificationCodeContainer.classList.remove('hidden');
+            displayMessage('Verification code sent to your email!', 'success');
+          } else {
+            displayMessage('Failed to send verification code. Please try again.', 'error');
+          }
+        } catch (error) {
+          console.error('Error in email verification:', error);
+          displayMessage('Failed to send verification code. Please try again.', 'error');
+        }
+      }
+    });
+
+    // Update the signup form submission
+    signupForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = signupUsername.value;
+      const email = signupEmail.value;
+      const password = signupPassword.value;
+      const enteredCode = verificationCodeInput.value;
+
+      if (!username || !email || !password) {
+        displayMessage('Please enter username, email, and password for signup.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        displayMessage('Email not valid. Please check and try again.', 'error');
+        return;
+      }
+
+      if (!verificationCode || enteredCode !== verificationCode) {
+        displayMessage('Invalid verification code. Please check your email and try again.', 'error');
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userDocRef = doc(db, "artifacts", "your-app-id", "users", user.uid, "user-data", "profile");
+        await setDoc(userDocRef, {
+          username: username,
+          email: email,
+          createdAt: new Date(),
+          emailVerified: true
+        });
+
+        displayMessage('Account created successfully! You are now logged in.', 'success');
+        verificationCodeContainer.classList.add('hidden');
+        verificationCodeInput.value = '';
+        verificationCode = null;
+      } catch (error) {
+        console.error('Error during signup:', error);
+        if (error.code === 'auth/email-already-in-use') {
+          displayMessage('Authorization failed: Email already in use, please try again with a different email.');
+        } else {
+          displayMessage('Authorization failed: Wrong credentials, please try again.');
+        }
+      }
+    });
+
+    // Add login form submission handler
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+
+      if (!email || !password) {
+        displayMessage('Please enter both email and password.', 'error');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        displayMessage('Please enter a valid email address.', 'error');
+        return;
+      }
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        displayMessage('Login successful!', 'success');
+        loginEmail.value = '';
+        loginPassword.value = '';
+      } catch (error) {
+        console.error('Error during login:', error);
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+          displayMessage('Invalid email or password. Please try again.', 'error');
+        } else {
+          displayMessage(`Login failed: ${error.message}`, 'error');
+        }
+      }
+    });
+
+    logoutBtn.addEventListener('click', async function () {
+      try {
+        await signOut(auth);
+        displayMessage('Logged out successfully.', 'success');
+      } catch (error) {
+        console.error('Error during logout:', error);
+        displayMessage(`Logout failed: ${error.message}`);
+      }
+    });
+
+    switchToLoginLink.addEventListener('click', () => toggleAuthForms(true));
+    switchToSignupLink.addEventListener('click', () => toggleAuthForms(false));
+
+    getStartedBtn.addEventListener('click', () => {
+      showContent('auth-forms-container');
+      toggleAuthForms(true);
+    });
+
+    // Sidebar Navigation Event Listeners
+    navHome.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContent('landing-page-content');
+    });
+
+    navDashboard.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentUser) {
+        showContent('dashboard');
+      } else {
+        displayMessage('Please log in to view the dashboard.', 'error');
+        showContent('auth-forms-container');
+        toggleAuthForms(true);
+      }
+    });
+
+    navResources.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContent('resources-content');
+    });
+
+    navAbout.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContent('about-content');
+    });
+
+    navDonate.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContent('donate-content');
+    });
+
+    navProduct.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContent('product-content');
+    });
+
+    navStory.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContent('story-content');
+    });
+
+    // Tracker Form Submission
+    trackerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        displayMessage('Please log in to save tracker entries.', 'error');
+        return;
+      }
+      const symptoms = symptomsInput.value.trim();
+      const mood = moodSelect.value;
+      if (!symptoms && !mood) {
+        displayMessage('Please enter symptoms/notes or select a mood to save.', 'error');
+        return;
+      }
+      // Show spinner
+      const btn = trackerForm.querySelector('button[type="submit"]');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> Saving...';
+      btn.disabled = true;
+      try {
+        const appId = "your-app-id";
+        const trackerCollectionRef = collection(db, `artifacts/${appId}/users/${currentUser.uid}/tracker-entries`);
+        await addDoc(trackerCollectionRef, {
+          symptoms: symptoms,
+          mood: mood,
+          timestamp: serverTimestamp()
+        });
+        displayMessage('Tracker entry saved successfully! <span class="checkmark"><i class="fa fa-check-circle"></i></span>', 'success');
+        symptomsInput.value = '';
+        moodSelect.value = '';
+      } catch (error) {
+        console.error("Error saving tracker entry:", error);
+        displayMessage(`Failed to save entry: ${error.message}`, 'error');
+      } finally {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+      }
+    });
+
+    // Story Form Submission
+    const storyForm = document.getElementById('story-form');
+    storyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        displayMessage('Please log in to share your story.', 'error');
+        return;
+      }
+
+      const title = document.getElementById('story-title').value.trim();
+      const content = document.getElementById('story-content').value.trim();
+      const imageFile = document.getElementById('story-image').files[0];
+
+      if (!title || !content) {
+        displayMessage('Please enter both a title and your story content.', 'error');
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        return;
+      }
+
+      // Show spinner on button
+      const btn = storyForm.querySelector('button[type="submit"]');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> Sharing...';
+      btn.disabled = true;
+
+      try {
+        const appId = "your-app-id";
+        const storyData = {
+          title: title,
+          content: content,
+          authorId: currentUser.uid,
+          authorName: currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Anonymous'),
+          timestamp: serverTimestamp(),
+          likes: 0,
+          comments: []
+        };
+
+        // Add story to Firestore
+        const storyRef = await addDoc(collection(db, `artifacts/${appId}/stories`), storyData);
+        
+        // If image is provided, upload to Storage and update story with imageUrl
+        if (imageFile) {
+          const storageRef = ref(storage, `stories/${storyRef.id}/${imageFile.name}`);
+          await uploadBytes(storageRef, imageFile);
+          const imageUrl = await getDownloadURL(storageRef);
+          await updateDoc(storyRef, { imageUrl: imageUrl });
+        }
+
+        displayMessage('Your story has been shared successfully! <span class="checkmark"><i class="fa fa-check-circle"></i></span>', 'success');
+        storyForm.reset();
+      } catch (error) {
+        console.error("Error sharing story:", error);
+        displayMessage(`Failed to share story: ${error.message}`, 'error');
+      } finally {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+      }
+    });
+
+    // --- Motivational Quotes Array ---
+    const motivationalQuotes = [
+      "You are stronger than you think.",
+      "Every day is a new beginning.",
+      "Hope is the heartbeat of the soul.",
+      "Small steps every day.",
+      "Your story can inspire others.",
+      "Together, we are unstoppable.",
+      "Believe in your journey.",
+      "You are not alone.",
+      "Technoblade never died neither will you"
+    ];
+    function showRandomQuote() {
+      const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+      document.getElementById('motivation-quote').textContent = quote;
+    }
+    showRandomQuote();
+    // --- Footer Year ---
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+    // Technoblade Icon Toast Logic
+    const technobladeIcon = document.getElementById('technoblade-icon');
+    const technobladeMessage = document.getElementById('technoblade-message');
+    technobladeIcon.addEventListener('click', () => {
+      technobladeMessage.style.display = 'block';
+      setTimeout(() => {
+        technobladeMessage.style.display = 'none';
+      }, 2000);
+    });
+    // Theme Switch Logic (fixed button, no modal)
+    const themeSwitch = document.getElementById('theme-switch');
+    const themeSwitchIcon = document.getElementById('theme-switch-icon');
+    function updateThemeSwitchIcon() {
+      if (document.body.classList.contains('dark-mode')) {
+        themeSwitchIcon.className = 'fa fa-sun';
+        themeSwitch.style.background = '#23243a';
+        themeSwitch.style.color = '#e0aaff';
+        themeSwitch.style.borderColor = '#e0aaff';
+      } else {
+        themeSwitchIcon.className = 'fa fa-moon';
+        themeSwitch.style.background = '#fff';
+        themeSwitch.style.color = '#8e24aa';
+        themeSwitch.style.borderColor = '#8e24aa';
+      }
+    }
+    themeSwitch.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeSwitchIcon();
+    });
+    // On load, set theme from localStorage if available
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+    updateThemeSwitchIcon();
+
+    // Medication Tracker Logic
+    const medicationForm = document.getElementById('medication-form');
+    const medicationList = document.getElementById('medication-list');
+    let medications = JSON.parse(localStorage.getItem('medications') || '[]');
+    function renderMedications() {
+      medicationList.innerHTML = '';
+      if (medications.length === 0) {
+        medicationList.innerHTML = '<li class="text-gray-500">No medications added for today.</li>';
+        return;
+      }
+      medications.forEach((med, idx) => {
+        const li = document.createElement('li');
+        li.className = 'entry-item';
+        li.innerHTML = `<strong>${med.name}</strong> - ${med.dose} at ${med.time} <button class='btn btn-success btn-sm' data-idx='${idx}'>Mark as Taken</button>`;
+        medicationList.appendChild(li);
+      });
+    }
+    renderMedications();
+    medicationForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('medication-name').value.trim();
+      const dose = document.getElementById('medication-dose').value.trim();
+      const time = document.getElementById('medication-time').value;
+      if (!name || !dose || !time) return;
+      medications.push({ name, dose, time });
+      localStorage.setItem('medications', JSON.stringify(medications));
+      renderMedications();
+      // Schedule reminder
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const now = new Date();
+        const [h, m] = time.split(':');
+        const medTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+        const delay = medTime - now;
+        if (delay > 0) {
+          setTimeout(() => {
+            new Notification(`Time to take your medication: ${name} (${dose})`);
+          }, delay);
+        }
+      }
+      medicationForm.reset();
+    });
+    // Mark as taken
+    medicationList.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-success')) {
+        const idx = e.target.getAttribute('data-idx');
+        medications.splice(idx, 1);
+        localStorage.setItem('medications', JSON.stringify(medications));
+        renderMedications();
+      }
+    });
+    // Ask for notification permission on load
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+    // Accessibility Menu Logic
+    const increaseText = document.getElementById('increase-text');
+    const decreaseText = document.getElementById('decrease-text');
+    const resetText = document.getElementById('reset-text');
+    const toggleContrast = document.getElementById('toggle-contrast');
+    let baseFontSize = 16;
+    function setFontSize(size) {
+      document.documentElement.style.fontSize = size + 'px';
+    }
+    increaseText.addEventListener('click', () => {
+      baseFontSize += 2;
+      setFontSize(baseFontSize);
+    });
+    decreaseText.addEventListener('click', () => {
+      baseFontSize = Math.max(12, baseFontSize - 2);
+      setFontSize(baseFontSize);
+    });
+    resetText.addEventListener('click', () => {
+      baseFontSize = 16;
+      setFontSize(baseFontSize);
+    });
+    toggleContrast.addEventListener('click', () => {
+      document.body.classList.toggle('high-contrast');
+    });
+    
+  </script>
+ 
+ 
+
+  <!-- Google Translate Widget -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    }
+  </script>
+  
+   
+  <script type="text/javascript">
+  (function() {
+    emailjs.init("OSTogypwaMW6XWs_c");
+  })();
+  const newFeedbackBtn = document.getElementById('new-feedback-btn');
+  const newFeedbackModal = document.getElementById('new-feedback-modal');
+  const closeNewFeedback = document.getElementById('close-new-feedback');
+  const newFeedbackForm = document.getElementById('new-feedback-form');
+  const newFeedbackStatus = document.getElementById('new-feedback-status');
+  newFeedbackBtn.addEventListener('click', () => {
+    newFeedbackModal.style.display = 'flex';
+    newFeedbackStatus.textContent = '';
+  });
+  closeNewFeedback.addEventListener('click', () => {
+    newFeedbackModal.style.display = 'none';
+  });
+  newFeedbackForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('new-feedback-name').value;
+    const email = document.getElementById('new-feedback-email').value;
+    const message = document.getElementById('new-feedback-message').value;
+    newFeedbackStatus.textContent = 'Sending...';
+    emailjs.send('service_2ajn5no', 'template_melm46l', {
+      from_name: name,
+      from_email: email,
+      message: message
+    }).then(function(response) {
+      newFeedbackStatus.textContent = 'Thank you for your feedback!';
+      newFeedbackForm.reset();
+    }, function(error) {
+      newFeedbackStatus.textContent = 'Failed to send feedback. Please try again.';
+    });
+  });
+  </script>
+  <!-- Disable right-click and inspect shortcuts -->
+  <script>
+    // Disable right-click
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Disable F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S
+    document.addEventListener('keydown', function(e) {
+      // F12
+      if (e.keyCode === 123) {
+        e.preventDefault();
+      }
+      // Ctrl+Shift+I/J/C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+        e.preventDefault();
+      }
+      // Ctrl+U, Ctrl+S
+      if (e.ctrlKey && (e.key === 'U' || e.key === 'S')) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html> 
